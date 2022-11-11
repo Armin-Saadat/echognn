@@ -27,9 +27,9 @@ scipy
 seaborn
 six
 threadpoolctl
-torch==1.12.1
-torchvision==0.13.1
-torchaudio==0.12.1
+torch
+torchvision
+torchaudio
 torch-geometric==2.1.0.post1
 torch-scatter==2.0.9
 torch-sparse==0.6.15
@@ -39,4 +39,3 @@ tqdm==4.64.0
 typing-extensions==4.2.0
 urllib3==1.26.9
 wcwidth==0.2.5
-
