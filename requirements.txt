@@ -37,5 +37,5 @@ torch-cluster==1.6.0
 torch-spline-conv==1.2.1
 tqdm==4.64.0
 typing-extensions==4.2.0
-urllib3==1.26.9
+urllib3==1.26.12
 wcwidth==0.2.5
