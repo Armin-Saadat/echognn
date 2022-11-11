@@ -20,7 +20,7 @@ To reproduce the exact results reported in our MICCAI 2022 submission, follow th
 5. Please ensure that in the config file, the path to the trained model is specified as ./trained_models/miccai2022.pth (under model.checkpoint_path)
 6. Run the following command:
 ```
-python run.py --config_path ./configs/default.yaml --test"
+python run.py --config_path ./configs/default.yaml --test
 ```
 
 ## Requirements
