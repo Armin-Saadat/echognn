@@ -68,7 +68,7 @@ model:
   # Path to checkpoint to continue training from or for evaluation (testing)
   checkpoint_path: ./trained_models/miccai2022.pth
   # Path to pretrained model
-  pretrained_path: ./trained_models/miccai2022.pth
+  pretrained_path:
 
   # The Video Encoder parameters
   video_encoder:
