@@ -24,6 +24,12 @@ python run.py --config_path ./configs/default.yaml --test
 ```
 
 ## Requirements
+Use Conda 22, Python3.9, and Pip 22. For Cuda 11.4, run the following commands:
+```
+pip3 install torch==1.11.0 torchvision==0.12.0 torchaudio==0.11.0 --extra-index-url https://download.pytorch.org/whl/cu114
+
+pip install torch-scatter torch-sparse torch-cluster torch-spline-conv torch-geometric -f https://data.pyg.org/whl/torch-1.11.0+cu102.html
+```
 To install the requirements (preferably in a virtual env), run the following command:
 ```
 pip install -U -r requirements.txt
