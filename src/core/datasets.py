@@ -46,7 +46,7 @@ class EchoNetEfDataset(Dataset, ABC):
     def __init__(self,
                  dataset_path: str,
                  num_frames: int = 32,
-                 num_clips_per_vid: int = 1,
+                 num_clips_per_vid: int = 2,
                  mean: float = 0.1289,
                  std: float = 0.1911,
                  label_string: str = 'EF',
