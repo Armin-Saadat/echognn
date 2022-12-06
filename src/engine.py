@@ -182,8 +182,6 @@ class Engine(object):
 
         if phase != 'pretrain':
             # Add number of videos per samples to configs that need it
-            print("hi")
-            print(dataset.num_vids_per_sample)
             self.num_vids_per_sample = dataset.num_vids_per_sample
             self.model_config['attention_encoder'].update({'num_vids_per_sample': dataset.num_vids_per_sample})
             self.model_config['graph_regressor'].update({'num_vids_per_sample': dataset.num_vids_per_sample})
@@ -426,6 +424,8 @@ class Engine(object):
                                       regression_predictions.detach().cpu().numpy(),
                                       regression_labels.detach().cpu().numpy())
 
+            break
+
         # Compute training time
         train_time = time.time() - train_start
         with torch.no_grad():
@@ -619,6 +619,7 @@ class Engine(object):
                                           weights_to_use='outgoing_edge',
                                           adj=adj,
                                           frame_weights=node_weights)
+                break
 
             if self.train_config['eval_visualization']:
                 draw_ef_plots(predictions=ypred,

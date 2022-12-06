@@ -1,7 +1,7 @@
 # Training and optimization configs
 train:
-  num_epochs: 10000
-  batch_size: 80
+  num_epochs: 100
+  batch_size: 10
   num_workers: 0
   # Prints number of parameters in the model
   print_model_stats: True
@@ -66,7 +66,7 @@ eval:
 # Model-specific configs
 model:
   # Path to checkpoint to continue training from or for evaluation (testing)
-  checkpoint_path: ./trained_models/miccai2022.pth
+  checkpoint_path:
   # Path to pretrained model
   pretrained_path:
 
@@ -114,7 +114,7 @@ dataset:
   # Approximate number of frames per cardiac cycle
   num_frames_per_cycle: 64
   # Number of frames per clip
-  num_frames: 64
+  num_frames: 16
   # EF categories for the classification head
   classification_classes: [0, 30, 40, 55, 100]
   # Indicates whether LV zoom-in augmentation is used during training
