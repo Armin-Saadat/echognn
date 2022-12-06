@@ -594,8 +594,6 @@ class MLPEdgeEncoder(nn.Module):
         x_fin[:, self.num_frames//2:, self.num_frames//2:, :] = x.view(x.size(0), self.num_frames, self.num_frames-1, self.hidden_dim)[:, self.num_frames//2:, self.num_frames//2:, :]
         x_fin[:, :self.num_frames//2, -self.num_frames//2:, :] = x_fin1
         x_fin[:, self.num_frames//2:, :self.num_frames//2, :] = x_fin2
-        print(x_fin[0, :4, -self.num_frames//2:-self.num_frames//2+3, 1])
-        print(x_fin[0, self.num_frames//2:self.num_frames//2+3, :3, 3])
         x = x_fin.view(x.size(0), self.num_frames*(self.num_frames-1), self.hidden_dim)
         x = self.mlp5(x)
 
