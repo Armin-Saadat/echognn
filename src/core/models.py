@@ -570,6 +570,7 @@ class MLPEdgeEncoder(nn.Module):
         x = torch.cat((x, x_skip), dim=2)  # Skip connection
         x = self.mlp4(x)
         print(x.size())
+        print(self.num_frames)
     #    x_prime1 = torch.zeros(x.size(0), self.num_frames, self.hidden_dim).to(self.device)
     #    x_prime2 = torch.zeros(x.size(0), self.num_frames, self.hidden_dim).to(self.device)
     #    for i in range(self.num_frames):
