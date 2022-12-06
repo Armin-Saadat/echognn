@@ -583,7 +583,7 @@ class MLPEdgeEncoder(nn.Module):
         x_prime2.unsqueeze(1)
         x_fin1 = x_prime1
         x_fin2 = x_prime2
-        for i in range(1, num_frames):
+        for i in range(1, self.num_frames):
             x_fin1 = torch.concat((x_fin1, torch.roll(x_prime1, i, 2)), dim=1)
             x_fin2 = torch.concat((x_fin2, torch.roll(x_prime2, i, 2)), dim=1)
         x_fin = torch.zeros(x.size(0), self.num_frames, self.num_frames-1, self.hidden_dim)
