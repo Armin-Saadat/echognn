@@ -478,6 +478,7 @@ class MLPEdgeEncoder(nn.Module):
         self.num_vids_per_sample = num_vids_per_sample
         self.num_frames = num_frames
         self.hidden_dim = hidden_dim
+        self.device = device
 
         # Create matrices fetching outgoing and incoming node messages
         off_diag = np.ones([num_frames * num_vids_per_sample,
@@ -568,8 +569,8 @@ class MLPEdgeEncoder(nn.Module):
         x = self._node2edge(x, self.rel_rec, self.rel_send)
         x = torch.cat((x, x_skip), dim=2)  # Skip connection
         x = self.mlp4(x)
-        x_prime1 = torch.zeros(x.size(0), self.num_frames, self.hidden_dim)
-        x_prime2 = torch.zeros(x.size(0), self.num_frames, self.hidden_dim)
+        x_prime1 = torch.zeros(x.size(0), self.num_frames, self.hidden_dim).to(self.device)
+        x_prime2 = torch.zeros(x.size(0), self.num_frames, self.hidden_dim).to(self.device)
         for i in range(self.num_frames*2):
             x1 = x.view(x.size(0), self.num_frames*2, self.num_frames*2-1, self.hidden_dim)[:, :self.num_frames, -self.num_frames:, :].permute(0, 2, 1, 3)
             x2 = x.view(x.size(0), self.num_frames*2, self.num_frames*2-1, self.hidden_dim)[:, self.num_frames:, :self.num_frames, :].permute(0, 2, 1, 3)
@@ -586,7 +587,7 @@ class MLPEdgeEncoder(nn.Module):
         for i in range(1, self.num_frames*2):
             x_fin1 = torch.concat((x_fin1, torch.roll(x_prime1, i, 2)), dim=1)
             x_fin2 = torch.concat((x_fin2, torch.roll(x_prime2, i, 2)), dim=1)
-        x_fin = torch.zeros(x.size(0), self.num_frames*2, self.num_frames*2-1, self.hidden_dim)
+        x_fin = torch.zeros(x.size(0), self.num_frames*2, self.num_frames*2-1, self.hidden_dim).to(self.device)
         x_fin[:, :self.num_frames, :-self.num_frames, :] = x[:, :self.num_frames, :-self.num_frames, :]
         x_fin[:, self.num_frames:, self.num_frames:, :] = x[:, self.num_frames:, self.num_frames:, :]
         x_fin[:, :self.num_frames, -self.num_frames:, :] = x_fin1
