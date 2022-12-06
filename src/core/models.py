@@ -580,8 +580,8 @@ class MLPEdgeEncoder(nn.Module):
             else:
                 x_prime1 += torch.concat((torch.diagonal(x1, offset=i, dim1=-3, dim2=-2).permute(0, 2, 1), torch.diagonal(x1, offset=i-self.num_frames, dim1=-3, dim2=-2).permute(0, 2, 1)), dim=1)
                 x_prime2 += torch.concat((torch.diagonal(x2, offset=i, dim1=-3, dim2=-2).permute(0, 2, 1), torch.diagonal(x2, offset=i-self.num_frames, dim1=-3, dim2=-2).permute(0, 2, 1)), dim=1)
-        x_prime1.unsqueeze(1)
-        x_prime2.unsqueeze(1)
+        x_prime1 = x_prime1.unsqueeze(1)
+        x_prime2 = x_prime2.unsqueeze(1)
         x_fin1 = x_prime1
         x_fin2 = x_prime2
         for i in range(1, self.num_frames):
