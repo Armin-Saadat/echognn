@@ -1,6 +1,6 @@
 # Training and optimization configs
 train:
-  num_epochs: 2000
+  num_epochs: 100
   batch_size: 10
   num_workers: 0
   # Prints number of parameters in the model
@@ -112,7 +112,7 @@ dataset:
   # Indicates the number of random clips extracted from each video during training
   num_clips_per_vid: 3
   # Approximate number of frames per cardiac cycle
-  num_frames_per_cycle: 16
+  num_frames_per_cycle: 64
   # Number of frames per clip
   num_frames: 16
   # EF categories for the classification head

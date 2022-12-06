@@ -512,7 +512,7 @@ def compute_ed_frame_distance(ed_frame_true: int,
         return
 
     # Find the clip number where the ED label is located
-    clip_idx = torch.div(ed_frame_true, 64, rounding_mode='floor')
+    clip_idx = torch.div(ed_frame_true, num_frames, rounding_mode='floor')
 
     # Get the frame indices for the clip that contains the ED frame
     clip_frame_idx = frame_idx[clip_idx]
@@ -647,7 +647,7 @@ def compute_es_frame_distance(ed_frame_true: int,
         return
 
     # Find the clip number where the ED label is located
-    clip_idx = torch.div(es_frame_true, 64, rounding_mode='floor')
+    clip_idx = torch.div(es_frame_true, num_frames, rounding_mode='floor')
 
     # Get the frame indices for the clip that contains the ED frame
     clip_frame_idx = frame_idx[clip_idx]
