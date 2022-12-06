@@ -588,8 +588,8 @@ class MLPEdgeEncoder(nn.Module):
             x_fin1 = torch.concat((x_fin1, torch.roll(x_prime1, i, 2)), dim=1)
             x_fin2 = torch.concat((x_fin2, torch.roll(x_prime2, i, 2)), dim=1)
         x_fin = torch.zeros(x.size(0), self.num_frames*2, self.num_frames*2-1, self.hidden_dim).to(self.device)
-        x_fin[:, :self.num_frames, :-self.num_frames, :] = x[:, :self.num_frames, :-self.num_frames, :]
-        x_fin[:, self.num_frames:, self.num_frames:, :] = x[:, self.num_frames:, self.num_frames:, :]
+        x_fin[:, :self.num_frames, :-self.num_frames, :] = x.view(x.size(0), self.num_frames*2, self.num_frames*2-1, self.hidden_dim)[:, :self.num_frames, :-self.num_frames, :]
+        x_fin[:, self.num_frames:, self.num_frames:, :] = x.view(x.size(0), self.num_frames*2, self.num_frames*2-1, self.hidden_dim)[:, self.num_frames:, self.num_frames:, :]
         x_fin[:, :self.num_frames, -self.num_frames:, :] = x_fin1
         x_fin[:, self.num_frames:, :self.num_frames, :] = x_fin2
         x = x_fin
