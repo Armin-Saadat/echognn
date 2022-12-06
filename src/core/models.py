@@ -477,6 +477,7 @@ class MLPEdgeEncoder(nn.Module):
         self.activation_func = nn.Sigmoid()
         self.num_vids_per_sample = num_vids_per_sample
         self.num_frames = num_frames
+        self.hidden_dim = hidden_dim
 
         # Create matrices fetching outgoing and incoming node messages
         off_diag = np.ones([num_frames * num_vids_per_sample,
@@ -567,9 +568,30 @@ class MLPEdgeEncoder(nn.Module):
         x = self._node2edge(x, self.rel_rec, self.rel_send)
         x = torch.cat((x, x_skip), dim=2)  # Skip connection
         x = self.mlp4(x)
-       # x_prime = torch.zeros(x.size(0), )
-        print("hi")
-        print(x.size())
+        x_prime1 = torch.zeros(x.size(0), self.num_frames//2, self.hidden_dim)
+        x_prime2 = torch.zeros(x.size(0), self.num_frames//2, self.hidden_dim)
+        for i in range(num_frames):
+            x1 = x.veiw(x.size(0), self.num_frames, self.num_frames-1, self.hidden_dim)[:, :self.num_frames//2, -self.num_frames//2:, :].permute(0, 2, 1, 3)
+            x2 = x.veiw(x.size(0), self.num_frames, self.num_frames-1, self.hidden_dim)[:, self.num_frames//2:, :self.num_frames//2, :].permute(0, 2, 1, 3)
+            if i==0:
+                x_prime1 += torch.diagonal(x1, offset=0, dim1=-3, dim2=-2)
+                x_prime2 += torch.diagonal(x2, offset=0, dim1=-3, dim2=-2)
+            else:
+                x_prime1 += torch.concat((torch.diagonal(x1, offset=i, dim1=-3, dim2=-2), torch.diagonal(x1, offset=i-self.num_frames//2, dim1=-3, dim2=-2)), dim=1)
+                x_prime2 += torch.concat((torch.diagonal(x2, offset=i, dim1=-3, dim2=-2), torch.diagonal(x2, offset=i-self.num_frames//2, dim1=-3, dim2=-2)), dim=1)
+        x_prime1.unsqueeze(1)
+        x_prime2.unsqueeze(1)
+        x_fin1 = x_prime1
+        x_fin2 = x_prime2
+        for i in range(1, num_frames):
+            x_fin1 = torch.concat((x_fin1, torch.roll(x_prime1, i, 2)), dim=1)
+            x_fin2 = torch.concat((x_fin2, torch.roll(x_prime2, i, 2)), dim=1)
+        x_fin = torch.zeros(x.size(0), self.num_frames, self.num_frames-1, self.hidden_dim)
+        x_fin[:, :self.num_frames//2, :-self.num_frames//2, :] = x[:, :self.num_frames//2, :-self.num_frames//2, :]
+        x_fin[:, self.num_frames//2:, self.num_frames//2:, :] = x[:, self.num_frames//2:, self.num_frames//2:, :]
+        x_fin[:, :self.num_frames//2, -self.num_frames//2:, :] = x_fin1
+        x_fin[:, self.num_frames//2:, :self.num_frames//2, :] = x_fin2
+        x = x_fin
 
         return self.activation_func(self.fc_out(x))
 
