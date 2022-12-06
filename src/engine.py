@@ -424,8 +424,6 @@ class Engine(object):
                                       regression_predictions.detach().cpu().numpy(),
                                       regression_labels.detach().cpu().numpy())
 
-            break
-
         # Compute training time
         train_time = time.time() - train_start
         with torch.no_grad():
@@ -619,7 +617,6 @@ class Engine(object):
                                           weights_to_use='outgoing_edge',
                                           adj=adj,
                                           frame_weights=node_weights)
-                break
 
             if self.train_config['eval_visualization']:
                 draw_ef_plots(predictions=ypred,
