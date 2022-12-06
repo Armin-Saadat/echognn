@@ -240,9 +240,9 @@ class Custom3DConv(nn.Module):
     """
 
     def __init__(self,
-                 out_channels: None,
-                 kernel_sizes: None,
-                 pool_sizes: None,
+                 out_channels: list[int] = None,
+                 kernel_sizes: list[int] = None,
+                 pool_sizes: list[int] = None,
                  output_dim: int = 128,
                  cnn_dropout_p: float = 0):
         """
@@ -574,13 +574,11 @@ class MLPEdgeEncoder(nn.Module):
             x1 = x.view(x.size(0), self.num_frames*2, self.num_frames*2-1, self.hidden_dim)[:, :self.num_frames, -self.num_frames:, :].permute(0, 2, 1, 3)
             x2 = x.view(x.size(0), self.num_frames*2, self.num_frames*2-1, self.hidden_dim)[:, self.num_frames:, :self.num_frames, :].permute(0, 2, 1, 3)
             if i==0:
-                print(torch.diagonal(x1, offset=0, dim1=-3, dim2=-2).size())
-                print(x1.size())
-                x_prime1 += torch.diagonal(x1, offset=0, dim1=-3, dim2=-2)
-                x_prime2 += torch.diagonal(x2, offset=0, dim1=-3, dim2=-2)
+                x_prime1 += torch.diagonal(x1, offset=0, dim1=-3, dim2=-2).permute(0, 2, 1)
+                x_prime2 += torch.diagonal(x2, offset=0, dim1=-3, dim2=-2).permute(0, 2, 1)
             else:
-                x_prime1 += torch.concat((torch.diagonal(x1, offset=i, dim1=-3, dim2=-2), torch.diagonal(x1, offset=i-self.num_frames, dim1=-3, dim2=-2)), dim=1)
-                x_prime2 += torch.concat((torch.diagonal(x2, offset=i, dim1=-3, dim2=-2), torch.diagonal(x2, offset=i-self.num_frames, dim1=-3, dim2=-2)), dim=1)
+                x_prime1 += torch.concat((torch.diagonal(x1, offset=i, dim1=-3, dim2=-2).permute(0, 2, 1), torch.diagonal(x1, offset=i-self.num_frames, dim1=-3, dim2=-2).permute(0, 2, 1)), dim=1)
+                x_prime2 += torch.concat((torch.diagonal(x2, offset=i, dim1=-3, dim2=-2).permute(0, 2, 1), torch.diagonal(x2, offset=i-self.num_frames, dim1=-3, dim2=-2).permute(0, 2, 1)), dim=1)
         x_prime1.unsqueeze(1)
         x_prime2.unsqueeze(1)
         x_fin1 = x_prime1
@@ -798,6 +796,10 @@ class AttentionEncoder(nn.Module):
         :param x: torch.tensor, input tensor of shape N*num_frames*d
         :return: tuple of node and edge weights
         """
+
+        print("hh")
+        print(x.shape[0])
+        print(x.shape[1])
 
         x = x.view(x.shape[0]*x.shape[1], -1)
 
