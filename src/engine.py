@@ -182,8 +182,6 @@ class Engine(object):
 
         if phase != 'pretrain':
             # Add number of videos per samples to configs that need it
-            print("hi")
-            print(dataset.num_vids_per_sample)
             self.num_vids_per_sample = dataset.num_vids_per_sample
             self.model_config['attention_encoder'].update({'num_vids_per_sample': dataset.num_vids_per_sample})
             self.model_config['graph_regressor'].update({'num_vids_per_sample': dataset.num_vids_per_sample})
