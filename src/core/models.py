@@ -473,6 +473,7 @@ class MLPEdgeEncoder(nn.Module):
         self.mlp2 = NRIMLP(hidden_dim * 2, hidden_dim, hidden_dim, fc_dropout_p)
         self.mlp3 = NRIMLP(hidden_dim, hidden_dim, hidden_dim, fc_dropout_p)
         self.mlp4 = NRIMLP(hidden_dim * 3, hidden_dim, hidden_dim, fc_dropout_p)
+        self.mlp5 = NRIMLP(hidden_dim, hidden_dim, hidden_dim, fc_dropout_p)
         self.fc_out = nn.Linear(hidden_dim, 1)
         self.activation_func = nn.Sigmoid()
         self.num_vids_per_sample = num_vids_per_sample
@@ -594,7 +595,7 @@ class MLPEdgeEncoder(nn.Module):
         x_fin[:, :self.num_frames//2, -self.num_frames//2:, :] = x_fin1
         x_fin[:, self.num_frames//2:, :self.num_frames//2, :] = x_fin2
         x = x_fin.view(x.size(0), self.num_frames*(self.num_frames-1), self.hidden_dim)
-
+        x = self.mlp5(x)
 
         return self.activation_func(self.fc_out(x))
 
