@@ -575,6 +575,7 @@ class MLPEdgeEncoder(nn.Module):
             x2 = x.view(x.size(0), self.num_frames*2, self.num_frames*2-1, self.hidden_dim)[:, self.num_frames:, :self.num_frames, :].permute(0, 2, 1, 3)
             if i==0:
                 print(torch.diagonal(x1, offset=0, dim1=-3, dim2=-2).size())
+                print(x1.size())
                 x_prime1 += torch.diagonal(x1, offset=0, dim1=-3, dim2=-2)
                 x_prime2 += torch.diagonal(x2, offset=0, dim1=-3, dim2=-2)
             else:
