@@ -130,7 +130,7 @@ class EchoNetEfDataset(Dataset, ABC):
 
         # Other attributes
         self.num_frames = num_frames
-        self.num_vids_per_sample = 2
+        self.num_vids_per_sample = 1
         self.num_clips_per_vid = num_clips_per_vid
         self.num_frames_per_cycle = num_frames_per_cycle
         self.zoom_aug = zoom_aug
