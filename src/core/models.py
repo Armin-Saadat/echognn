@@ -570,7 +570,7 @@ class MLPEdgeEncoder(nn.Module):
         x = self.mlp4(x)
         x_prime1 = torch.zeros(x.size(0), self.num_frames//2, self.hidden_dim)
         x_prime2 = torch.zeros(x.size(0), self.num_frames//2, self.hidden_dim)
-        for i in range(num_frames):
+        for i in range(self.num_frames):
             x1 = x.veiw(x.size(0), self.num_frames, self.num_frames-1, self.hidden_dim)[:, :self.num_frames//2, -self.num_frames//2:, :].permute(0, 2, 1, 3)
             x2 = x.veiw(x.size(0), self.num_frames, self.num_frames-1, self.hidden_dim)[:, self.num_frames//2:, :self.num_frames//2, :].permute(0, 2, 1, 3)
             if i==0:
