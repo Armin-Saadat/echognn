@@ -567,6 +567,9 @@ class MLPEdgeEncoder(nn.Module):
         x = self._node2edge(x, self.rel_rec, self.rel_send)
         x = torch.cat((x, x_skip), dim=2)  # Skip connection
         x = self.mlp4(x)
+       # x_prime = torch.zeros(x.size(0), )
+        print("hi")
+        print(x.size())
 
         return self.activation_func(self.fc_out(x))
 
