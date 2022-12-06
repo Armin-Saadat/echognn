@@ -174,15 +174,17 @@ class EchoNetEfDataset(Dataset, ABC):
                                  dim=2)
 
         # Create fully connected graph
-        nx_graph = nx.complete_graph(self.num_frames, create_using=nx.DiGraph())
+        nx_graph = nx.complete_graph(self.num_frames * 2, create_using=nx.DiGraph())
         for i in range(1, cine_vid.shape[0]):
-            nx_graph = nx.compose(nx_graph, nx.complete_graph(range(i*self.num_frames,
-                                                                    (i+1)*self.num_frames),
+            nx_graph = nx.compose(nx_graph, nx.complete_graph(range(i*self.num_frames*2,
+                                                                    (i+1)*self.num_frames*2),
                                                               create_using=nx.DiGraph()))
 
         g = from_networkx(nx_graph)
 
-        # Add images and label to graph
+
+
+        # Add gimages and label to graph
         g.x = cine_vid
         g.regression_y = regression_label
         g.classification_y = classification_label
@@ -295,6 +297,7 @@ class EchoNetEfDataset(Dataset, ABC):
         """
 
         return self.num_samples
+
 
     @staticmethod
     def _loadvideo(filename: str):

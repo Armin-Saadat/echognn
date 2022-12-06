@@ -129,7 +129,7 @@ class Engine(object):
         self.model_config = config['model']
 
         # Add configs that the Attention Encoder needs
-        self.model_config['attention_encoder'].update({'num_frames': self.data_config['num_frames']})
+        self.model_config['attention_encoder'].update({'num_frames': self.data_config['num_frames'] * 2})
         self.model_config['attention_encoder'].update({'device': self.device})
         self.model_config['attention_encoder'].update({'input_dim': self.model_config['video_encoder']['output_dim']})
 
@@ -154,7 +154,7 @@ class Engine(object):
             self.train_config['criteria']['regression'].update({'reduction': 'none'})
 
             # Add configs that the Graph Regressor needs
-            self.model_config['graph_regressor'].update({'num_frames': self.data_config['num_frames']})
+            self.model_config['graph_regressor'].update({'num_frames': self.data_config['num_frames'] * 2})
             self.model_config['graph_regressor'].update({'num_clips_per_vid': self.data_config['num_clips_per_vid']})
             self.model_config['graph_regressor'].update({'input_dim': self.model_config['video_encoder']['output_dim']})
             self.model_config['graph_regressor'].update({'num_classes': len(self.data_config['classification_classes'])
@@ -196,7 +196,7 @@ class Engine(object):
             self.batch_mask = torch.tensor(np.repeat(list(range(self.train_config['batch_size'] *
                                                                 self.data_config['num_clips_per_vid'])),
                                                      self.data_config['num_frames'] *
-                                                     dataset.num_vids_per_sample),
+                                                     dataset.num_vids_per_sample * 2),
                                            device=self.device,
                                            dtype=torch.long)
 
@@ -344,7 +344,6 @@ class Engine(object):
             torch.cuda.empty_cache()
 
         for data in trainloader:
-
             # Move data to correct device
             data = data.to(self.device)
 
@@ -352,15 +351,21 @@ class Engine(object):
             self.optimizer.zero_grad()
 
             # Extract different components in the data
-            x = data.x
+            x1 = data.x
+            x2 = data.x
             edge_index = data.edge_index
             regression_labels = data.regression_y
             classification_labels = data.classification_y
 
             # Create embeddings from video inputs
+
+            x = torch.cat([x1, x2], dim=0)
             x = self.model['video_encoder'](x)
+            x1 = x[:x.shape[0] // 2, ...]
+            x2 = x[x.shape[0] // 2:, ...]
 
             # Get node and edge weights
+            x = torch.cat([x1, x2], dim=1)
             node_weights, edge_weights = self.model['attention_encoder'](x)
 
             # Create the weighted adjacency matrix for the Graph Regressor
@@ -368,6 +373,7 @@ class Engine(object):
                                edge_attr=torch.flatten(edge_weights[:, :, -1] / torch.max(edge_weights[:, :, -1], 1,
                                                                                           keepdim=True)[0]),
                                batch=self.batch_mask).squeeze(-1)
+
             adj = adj + torch.eye(adj.shape[-1], device=self.device)
 
             # Add self loops to the adj matrix
@@ -513,22 +519,27 @@ class Engine(object):
                 data = data.to(self.device)
 
                 # Extract different components in the data
-                x = data.x
+                x1 = data.x
+                x2 = data.x
                 edge_index = data.edge_index
                 regression_labels = data.regression_y
                 classification_labels = data.classification_y
 
-                # Batch mask looks different during test time
-                eval_batch_mask = torch.tensor(np.repeat(list(range(x.shape[0])),
-                                                         self.data_config['num_frames']*self.num_vids_per_sample),
-                                               device=self.device,
-                                               dtype=torch.long)
-
                 # Create embeddings from video inputs
+                x = torch.cat([x1, x2], dim=0)
                 x = self.model['video_encoder'](x)
 
                 # Get node and edge weights
+                x1 = x[:x.shape[0] // 2, ...]
+                x2 = x[x.shape[0] // 2:, ...]
+                x = torch.cat([x1, x2], dim=1)
                 node_weights, edge_weights = self.model['attention_encoder'](x)
+
+                # Batch mask looks different during test time
+                eval_batch_mask = torch.tensor(np.repeat(list(range(x.shape[0])),
+                                                         self.data_config['num_frames'] * self.num_vids_per_sample * 2),
+                                               device=self.device,
+                                               dtype=torch.long)
 
                 # Create the weighted adjacency matrix for the Graph Regressor
                 adj = to_dense_adj(edge_index,
