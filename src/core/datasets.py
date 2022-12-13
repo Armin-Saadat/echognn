@@ -162,8 +162,15 @@ class EchoNetEfDataset(Dataset, ABC):
         # Transform video
         cine_vid = self.trans(cine_vid)
 
+        cine_vid_2 = hflip(cine_vid)
+
         print(cine_vid.shape)
         print('-' * 100)
+
+        print(cine_vid_2.shape)
+        print('-' * 100)
+
+        exit()
 
         # Perform augmentation during training
         if (idx in self.train_idx) and self.zoom_aug:
