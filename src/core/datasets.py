@@ -162,16 +162,6 @@ class EchoNetEfDataset(Dataset, ABC):
         # Transform video
         cine_vid = self.trans(cine_vid)
 
-        cine_vid_2 = hflip(cine_vid)
-
-        print(cine_vid.shape)
-        print('-' * 100)
-
-        print(cine_vid_2.shape)
-        print('-' * 100)
-
-        exit()
-
         # Perform augmentation during training
         if (idx in self.train_idx) and self.zoom_aug:
             if np.random.randint(0, 2):
@@ -190,6 +180,10 @@ class EchoNetEfDataset(Dataset, ABC):
             cine_vid = torch.cat((cine_vid, torch.zeros(cine_vid.shape[0], 1,
                                                         self.num_frames - cine_vid.shape[2], 112, 112)),
                                  dim=2)
+
+        cine_vid2 = hflip(cine_vid)
+        print(cine_vid2.shape)
+        exit()
 
         # Create fully connected graph
         nx_graph = nx.complete_graph(self.num_frames * 2, create_using=nx.DiGraph())
