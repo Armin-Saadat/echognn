@@ -14,6 +14,7 @@ from torch.nn import Upsample
 import cv2
 from random import randint
 from math import isnan
+from matplotlib import pyplot as plt
 
 
 class EchoNetEfDataset(Dataset, ABC):
@@ -186,6 +187,16 @@ class EchoNetEfDataset(Dataset, ABC):
         temp1 = cine_vid2[:, :, :i, :, :]
         temp2 = cine_vid2[:, :, i:, :, :]
         cine_vid2 = torch.cat((temp2, temp1), dim=2)
+
+        plt.imshow(cine_vid[0, 0, i, :, :].numpy(), cmap='gray')
+        plt.savefig("./saved/cine_vid.png")
+        plt.imshow(cine_vid2[0, 0, 0, :, :].numpy(), cmap='gray')
+        plt.savefig("./saved/cine_vid2.png")
+        exit()
+
+
+
+
 
         # Create fully connected graph
         nx_graph = nx.complete_graph(self.num_frames * 2, create_using=nx.DiGraph())
