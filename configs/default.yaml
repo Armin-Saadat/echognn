@@ -10,7 +10,7 @@ train:
   # Indicates whether visualizations are made during test time
   eval_visualization: False
   # Indicates whether Wandb is used to keep track of runs
-  use_wandb: True
+  use_wandb: False
   wand_project_name: echognn
   wandb_mode: online
 
