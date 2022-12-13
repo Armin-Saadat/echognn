@@ -79,12 +79,17 @@ class EchoNetEfDataset(Dataset, ABC):
 
         # CSV file containing file names and labels
         filelist_df = pd.read_csv(os.path.join(dataset_path, 'FileList.csv'))
+        print("file")
+        print(filelist_df.shape)
 
         # Extract Split information
         splits = np.array(filelist_df['Split'].tolist())
         self.train_idx = np.where(splits == 'TRAIN')[0]
+        print(self.train_idx.shape)
         self.val_idx = np.where(splits == 'VAL')[0]
+        print(self.val_idx.shape)
         self.test_idx = np.where(splits == 'TEST')[0]
+        print(self.test_idx.shape)
 
         # Extract ES and ED frame indices
         self.es_frames = torch.tensor(np.array(filelist_df['ESFrame']), dtype=torch.int32)
