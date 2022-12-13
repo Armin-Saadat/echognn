@@ -9,6 +9,7 @@ import pandas as pd
 import networkx as nx
 from torch_geometric.utils import from_networkx
 from torchvision.transforms import ToTensor, Compose, Normalize
+from torchvision.transforms.functional import hflip
 from torch.nn import Upsample
 import cv2
 from random import randint
