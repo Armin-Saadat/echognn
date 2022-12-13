@@ -124,8 +124,8 @@ class EchoNetEfDataset(Dataset, ABC):
         self.trans = Compose([ToTensor(),
                               Normalize((mean), (std))])
 
-        self.trans2 = Compose([ToTensor(),
-                              Normalize((mean), (std)), hflip()])
+        # self.trans2 = Compose([ToTensor(),
+        #                       Normalize((mean), (std)), hflip()])
 
 
 
