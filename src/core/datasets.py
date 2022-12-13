@@ -78,9 +78,7 @@ class EchoNetEfDataset(Dataset, ABC):
             classification_classes = np.array([0, 30, 40, 55, 100])
 
         # CSV file containing file names and labels
-        filelist_df = pd.read_csv(os.path.join(dataset_path, 'FileList.csv'))[:5000]
-        print("file")
-        print(filelist_df.shape)
+        filelist_df = pd.read_csv(os.path.join(dataset_path, 'FileList.csv'))[:3000]
 
         # Extract Split information
         splits = np.array(filelist_df['Split'].tolist())
@@ -90,6 +88,7 @@ class EchoNetEfDataset(Dataset, ABC):
         print(self.val_idx.shape)
         self.test_idx = np.where(splits == 'TEST')[0]
         print(self.test_idx.shape)
+
 
         # Extract ES and ED frame indices
         self.es_frames = torch.tensor(np.array(filelist_df['ESFrame']), dtype=torch.int32)
@@ -198,7 +197,7 @@ class EchoNetEfDataset(Dataset, ABC):
 
 
         # Add gimages and label to graph
-        g.x1 = cine_vid
+        g.x = cine_vid
         g.x2 = cine_vid2
         g.regression_y = regression_label
         g.classification_y = classification_label

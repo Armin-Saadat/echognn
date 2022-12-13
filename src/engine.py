@@ -349,7 +349,7 @@ class Engine(object):
             self.optimizer.zero_grad()
 
             # Extract different components in the data
-            x1 = data.x1
+            x1 = data.x
             x2 = data.x2
             edge_index = data.edge_index
             regression_labels = data.regression_y
@@ -518,7 +518,7 @@ class Engine(object):
 
                 # Extract different components in the data
                 x1 = data.x
-                x2 = data.x
+                x2 = data.x2
                 edge_index = data.edge_index
                 regression_labels = data.regression_y
                 classification_labels = data.classification_y
