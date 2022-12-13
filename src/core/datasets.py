@@ -9,6 +9,7 @@ import pandas as pd
 import networkx as nx
 from torch_geometric.utils import from_networkx
 from torchvision.transforms import ToTensor, Compose, Normalize
+from torchvision.transforms.functional import hflip
 from torch.nn import Upsample
 import cv2
 from random import randint
@@ -123,6 +124,12 @@ class EchoNetEfDataset(Dataset, ABC):
         self.trans = Compose([ToTensor(),
                               Normalize((mean), (std))])
 
+        self.trans2 = Compose([ToTensor(),
+                              Normalize((mean), (std)), hflip()])
+
+
+
+
         # Interpolation needed if augmentation is required
         self.upsample = None
         if zoom_aug:
@@ -151,8 +158,12 @@ class EchoNetEfDataset(Dataset, ABC):
         # Get the video
         cine_vid = self._loadvideo(self.patient_data_dirs[idx])
 
+
         # Transform video
         cine_vid = self.trans(cine_vid)
+
+        print(cine_vid.shape)
+        print('-' * 100)
 
         # Perform augmentation during training
         if (idx in self.train_idx) and self.zoom_aug:
@@ -420,6 +431,7 @@ class PretrainEchoNetEfDataset(Dataset, ABC):
         # Normalization operation
         self.trans = Compose([ToTensor(),
                               Normalize((mean), (std))])
+
 
         # Interpolation needed if augmentation is required
         self.upsample = None
