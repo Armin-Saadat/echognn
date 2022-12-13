@@ -183,6 +183,11 @@ class EchoNetEfDataset(Dataset, ABC):
 
         cine_vid2 = hflip(cine_vid)
         print(cine_vid2.shape)
+        i =  randint(2, 14)
+        temp1 = cine_vid2[:, :, :i, :, :]
+        temp2 = cine_vid2[:, :, i:, :, :]
+        cine_vid2 = torch.cat((temp2, temp1), dim=2)
+        print(cine_vid2.shape)
         exit()
 
         # Create fully connected graph
