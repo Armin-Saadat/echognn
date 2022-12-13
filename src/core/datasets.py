@@ -173,6 +173,13 @@ class EchoNetEfDataset(Dataset, ABC):
                                                         self.num_frames - cine_vid.shape[2], 112, 112)),
                                  dim=2)
 
+        cine_vid2 = hflip(cine_vid)
+        i =  randint(2, cine_vid2.shape[2] - 2)
+        temp1 = cine_vid2[:, :, :i, :, :]
+        temp2 = cine_vid2[:, :, i:, :, :]
+        cine_vid2 = torch.cat((temp2, temp1), dim=2)
+
+
         # Create fully connected graph
         nx_graph = nx.complete_graph(self.num_frames * 2, create_using=nx.DiGraph())
         for i in range(1, cine_vid.shape[0]):
@@ -185,7 +192,8 @@ class EchoNetEfDataset(Dataset, ABC):
 
 
         # Add gimages and label to graph
-        g.x = cine_vid
+        g.x1 = cine_vid
+        g.x2 = cine_vid2
         g.regression_y = regression_label
         g.classification_y = classification_label
         g.es_frame = self.es_frames[idx]
