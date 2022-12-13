@@ -349,14 +349,13 @@ class Engine(object):
             self.optimizer.zero_grad()
 
             # Extract different components in the data
-            x1 = data.x1
+            x1 = data.x
             x2 = data.x2
             edge_index = data.edge_index
             regression_labels = data.regression_y
             classification_labels = data.classification_y
 
             # Create embeddings from video inputs
-
             x = torch.cat([x1, x2], dim=0)
             x = self.model['video_encoder'](x)
             x1 = x[:x.shape[0] // 2, ...]
@@ -429,6 +428,8 @@ class Engine(object):
                     update_evaluators(self.evaluators,
                                       regression_predictions.detach().cpu().numpy(),
                                       regression_labels.detach().cpu().numpy())
+            
+            break
 
         # Compute training time
         train_time = time.time() - train_start
@@ -518,7 +519,7 @@ class Engine(object):
 
                 # Extract different components in the data
                 x1 = data.x
-                x2 = data.x
+                x2 = data.x2
                 edge_index = data.edge_index
                 regression_labels = data.regression_y
                 classification_labels = data.classification_y
@@ -628,6 +629,8 @@ class Engine(object):
                                           weights_to_use='outgoing_edge',
                                           adj=adj,
                                           frame_weights=node_weights)
+
+                break
 
             if self.train_config['eval_visualization']:
                 draw_ef_plots(predictions=ypred,

@@ -196,7 +196,7 @@ class EchoNetEfDataset(Dataset, ABC):
                                                               create_using=nx.DiGraph()))
 
         g = from_networkx(nx_graph)
-        g.x1 = cine_vid
+        g.x = cine_vid
         g.x2 = cine_vid2
         g.regression_y = regression_label
         g.classification_y = classification_label
