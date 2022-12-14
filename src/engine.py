@@ -578,17 +578,17 @@ class Engine(object):
                 node_weights2, edge_weights2 = self.model['attention_encoder2'](embedding)
 
                 # Create the weighted adjacency matrix for the Graph Regressor
-                adj = to_dense_adj(edge_index2,
+                adj2 = to_dense_adj(edge_index2,
                                edge_attr=torch.flatten(edge_weights2[:, :, -1] / torch.max(edge_weights2[:, :, -1], 1,
                                                                                           keepdim=True)[0]),
                                batch=eval_batch_mask2).squeeze(-1)
-                adj = adj + torch.eye(adj.shape[-1], device=self.device)
+                adj2 = adj2 + torch.eye(adj2.shape[-1], device=self.device)
 
                 # Add self loops to the adj matrix
                 regression_predictions, classification_predictions, _ = self.model['graph_regressor2'](x=embedding,
                                                                                                frame_weights=
                                                                                                node_weights2[:, :, -1],
-                                                                                               adj=adj, phase=phase)
+                                                                                               adj=adj2, phase=phase)
 
                 # Add to array of ground truth labels and predictions
                 if self.train_config['eval_visualization']:
