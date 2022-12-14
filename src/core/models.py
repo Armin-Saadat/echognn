@@ -870,9 +870,6 @@ class GNNEFRegressor(nn.Module):
                                          nn.ELU(inplace=True))
 
         # output fc layer for the regressor
-        print(fc_hidden_dim)
-        print('-' * 100)
-        fc_hidden_dim = 13
         self.regression_mlp = nn.Sequential(nn.Linear(in_features=gnn_hidden_dims[-1],
                                                       out_features=fc_hidden_dim),
                                             nn.BatchNorm1d(fc_hidden_dim),
@@ -931,14 +928,11 @@ class GNNEFRegressor(nn.Module):
         x = torch.mean(x.view(x.shape[0], x.shape[1]//self.agg_num, self.agg_num, x.shape[2]), dim=2)
         embed = x
 
-        print(x.shape)
-        print('*' * 100)
-
-        # if not self.is_last_layer:
-        #     return None, None, embed
+        if not self.is_last_layer:
+            return None, None, embed
 
         # Regression MLP
-        regression_x = self.regression_mlp(x).squeeze()
+        regression_x = self.regression_mlp(x.squeeze(1)).squeeze()
 
         # Reshape to account for num of clips
         if phase == 'train':
