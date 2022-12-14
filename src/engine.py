@@ -198,6 +198,13 @@ class Engine(object):
                                            device=self.device,
                                            dtype=torch.long)
 
+            self.batch_mask2 = torch.tensor(np.repeat(list(range(self.train_config['batch_size'] *
+                                                                self.data_config['num_clips_per_vid'])),
+                                                     self.data_config['num_frames'] *
+                                                     dataset.num_vids_per_sample // self.model_config['graph_regressor']['agg_num']),
+                                           device=self.device,
+                                           dtype=torch.long)
+
             # Get sample weights and associated label intervals needed for weight resampling
             self.sample_weights = None
             self.sample_intervals = None
@@ -382,7 +389,7 @@ class Engine(object):
             adj = to_dense_adj(edge_index2,
                                edge_attr=torch.flatten(edge_weights2[:, :, -1] / torch.max(edge_weights2[:, :, -1], 1,
                                                                                           keepdim=True)[0]),
-                               batch=self.batch_mask).squeeze(-1)
+                               batch=self.batch_mask2).squeeze(-1)
             adj = adj + torch.eye(adj.shape[-1], device=self.device)
 
             # Add self loops to the adj matrix
