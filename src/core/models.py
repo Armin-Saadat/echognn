@@ -452,7 +452,7 @@ class MLPEdgeEncoder(nn.Module):
     forward(x): model's forward propagation
     """
     def __init__(self,
-                 input_dim: int = 128,
+                 input_dim: int = 32,
                  fc_dropout_p: float = 0.,
                  hidden_dim: int = 100,
                  num_frames: int = 32,
@@ -595,7 +595,7 @@ class MLPNodeEncoder(nn.Module):
     forward(x): model's forward propagation
     """
     def __init__(self,
-                 input_dim: int = 128,
+                 input_dim: int = 32,
                  fc_dropout_p: float = 0.,
                  hidden_dim: int = 100,
                  num_frames: int = 32,
