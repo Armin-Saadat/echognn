@@ -612,8 +612,7 @@ class MLPNodeEncoder(nn.Module):
 
         super().__init__()
 
-
-        self.mlp1 = NRIMLP(32, hidden_dim, hidden_dim, fc_dropout_p)
+        self.mlp1 = NRIMLP(input_dim, hidden_dim, hidden_dim, fc_dropout_p)
         self.mlp2 = NRIMLP(hidden_dim * 2, hidden_dim, hidden_dim, fc_dropout_p)
         self.mlp3 = NRIMLP(hidden_dim, hidden_dim, hidden_dim, fc_dropout_p)
         self.mlp4 = NRIMLP(hidden_dim * 3, hidden_dim, hidden_dim, fc_dropout_p)
@@ -748,6 +747,9 @@ class AttentionEncoder(nn.Module):
         super().__init__()
 
         encoder_config = deepcopy(config)
+
+        print(encoder_config['input_dim'])
+        print("*" * 100)
         name = encoder_config.pop('name')
         self.num_frames = encoder_config['num_frames']
         self.device = encoder_config.pop('device')
