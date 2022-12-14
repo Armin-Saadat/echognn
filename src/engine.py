@@ -370,14 +370,13 @@ class Engine(object):
             adj = adj + torch.eye(adj.shape[-1], device=self.device)
 
             # Add self loops to the adj matrix
-            print(self.model['graph_regressor'].regressor.is_last_layer)
-            print("yo2" * 100)
             regression_predictions, classification_predictions, embedding = self.model['graph_regressor'](x=x,
                                                                                                frame_weights=
                                                                                                node_weights[:, :, -1],
                                                                                                adj=adj)
 
             node_weights2, edge_weights2 = self.model['attention_encoder2'](embedding)
+
 
             # Create the weighted adjacency matrix for the Graph Regressor
             adj = to_dense_adj(edge_index2,
