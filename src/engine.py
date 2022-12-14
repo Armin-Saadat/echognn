@@ -347,17 +347,18 @@ class Engine(object):
         if torch.cuda.is_available():
             torch.cuda.empty_cache()
 
-        for data in trainloader:
+        for data, data2 in trainloader:
 
             # Move data to correct device
             data = data.to(self.device)
+            data2 = data2.to(self.device)
 
             # Zero the grads
             self.optimizer.zero_grad()
 
             # Extract different components in the data
             x = data.x
-            edge_index2 = data.edge_index2
+            edge_index2 = data2.edge_index
             edge_index = data.edge_index
             regression_labels = data.regression_y
             classification_labels = data.classification_y

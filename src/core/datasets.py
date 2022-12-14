@@ -189,7 +189,6 @@ class EchoNetEfDataset(Dataset, ABC):
                                                               create_using=nx.DiGraph()))
 
         g = from_networkx(nx_graph)
-        g2 = from_networkx(nx_graph2)
 
         # Add images and label to graph
         g.x = cine_vid
@@ -199,9 +198,19 @@ class EchoNetEfDataset(Dataset, ABC):
         g.ed_frame = self.ed_frames[idx]
         g.vid_dir = self.patient_data_dirs[idx]
         g.frame_idx = frame_idx
-        g.edge_index2 = g2.edge_index
 
-        return g
+        g2 = from_networkx(nx_graph2)
+
+        # Add images and label to graph
+        g2.x = cine_vid
+        g2.regression_y = regression_label
+        g2.classification_y = classification_label
+        g2.es_frame = self.es_frames[idx]
+        g2.ed_frame = self.ed_frames[idx]
+        g2.vid_dir = self.patient_data_dirs[idx]
+        g2.frame_idx = frame_idx
+
+        return g, g2
 
     def extract_test_data(self, cine_vid: torch.tensor) -> (torch.tensor, np.ndarray):
         """
