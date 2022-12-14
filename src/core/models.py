@@ -772,6 +772,7 @@ class AttentionEncoder(nn.Module):
         :return: tuple of node and edge weights
         """
 
+        print(x.shape)
         x = x.view(x.shape[0]*x.shape[1], -1)
 
         if self.node_encoder:

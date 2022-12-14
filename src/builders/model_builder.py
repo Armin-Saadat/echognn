@@ -37,6 +37,7 @@ def build(config: dict,
         if model_key == "attention_encoder2":
             con = deepcopy(config["attention_encoder"])
             con.update({'num_frames': config["attention_encoder"]['num_frames']//config["graph_regressor"]['agg_num']})
+            print(con['input_dim'])
             con.update({'input_dim': config["graph_regressor"]['gnn_hidden_dims'][-1]})
             print(con['input_dim'])
             print('*' * 100)
