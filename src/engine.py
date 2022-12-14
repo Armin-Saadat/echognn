@@ -540,8 +540,6 @@ class Engine(object):
 
                 # Extract different components in the data
                 x = data.x
-                print(x.shape)
-                print("*" * 100)
                 edge_index2 = data.edge_index2
                 edge_index = data.edge_index
                 regression_labels = data.regression_y
@@ -593,7 +591,7 @@ class Engine(object):
                 regression_predictions, classification_predictions, _ = self.model['graph_regressor2'](x=embedding,
                                                                                                frame_weights=
                                                                                                node_weights2[:, :, -1],
-                                                                                               adj=adj)
+                                                                                               adj=adj, phase=phase)
 
                 # Add to array of ground truth labels and predictions
                 if self.train_config['eval_visualization']:
