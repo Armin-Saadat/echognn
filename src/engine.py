@@ -385,17 +385,17 @@ class Engine(object):
 
 
             # Create the weighted adjacency matrix for the Graph Regressor
-            adj = to_dense_adj(edge_index2,
+            adj2 = to_dense_adj(edge_index2,
                                edge_attr=torch.flatten(edge_weights2[:, :, -1] / torch.max(edge_weights2[:, :, -1], 1,
                                                                                           keepdim=True)[0]),
                                batch=self.batch_mask2).squeeze(-1)
-            adj = adj + torch.eye(adj.shape[-1], device=self.device)
+            adj2 = adj2 + torch.eye(adj2.shape[-1], device=self.device)
 
             # Add self loops to the adj matrix
             regression_predictions, classification_predictions, _ = self.model['graph_regressor2'](x=embedding,
                                                                                                frame_weights=
                                                                                                node_weights2[:, :, -1],
-                                                                                               adj=adj)
+                                                                                               adj=adj2)
 
             # Find sparsity loss
             node_sparsity_loss, edge_sparsity_loss = self.criteria['sparsity'](node_weights, edge_weights)
