@@ -189,6 +189,13 @@ class EchoNetEfDataset(Dataset, ABC):
                                                               create_using=nx.DiGraph()))
 
         g = from_networkx(nx_graph)
+        next_graph = from_networkx(nx_graph2)
+
+        print(g)
+        print('-' * 100)
+
+        print(next_graph)
+        print('-' * 100)
 
         # Add images and label to graph
         g.x = cine_vid
@@ -198,7 +205,7 @@ class EchoNetEfDataset(Dataset, ABC):
         g.ed_frame = self.ed_frames[idx]
         g.vid_dir = self.patient_data_dirs[idx]
         g.frame_idx = frame_idx
-        g.next_graph = from_networkx(nx_graph2)
+        g.next_graph = next_graph
 
         return g
 
