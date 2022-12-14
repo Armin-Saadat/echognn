@@ -10,7 +10,7 @@ train:
   # Indicates whether visualizations are made during test time
   eval_visualization: False
   # Indicates whether Wandb is used to keep track of runs
-  use_wandb: True
+  use_wandb: False
   wand_project_name: echognn
   wandb_mode: online
 
@@ -99,9 +99,9 @@ model:
 # Dataset configs
 dataset:
   # Path to dataset
-  dataset_path: ../datasets/EchoNet-Dynamic/
+  dataset_path: ../datasets/camus/
   # Name of the dataset
-  name: echonet
+  name: camus
   # The mean and std for the Echonet-Dynamic dataset uses to standardize data
   mean: 0.1289
   std: 0.1911
@@ -112,9 +112,9 @@ dataset:
   # Indicates the number of random clips extracted from each video during training
   num_clips_per_vid: 3
   # Approximate number of frames per cardiac cycle
-  num_frames_per_cycle: 64
+  num_frames_per_cycle: 25
   # Number of frames per clip
-  num_frames: 16
+  num_frames: 25
   # EF categories for the classification head
   classification_classes: [0, 30, 40, 55, 100]
   # Indicates whether LV zoom-in augmentation is used during training

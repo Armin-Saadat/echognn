@@ -17,7 +17,7 @@ import SimpleITK as sitk
 from skimage.transform import rescale, resize
 
 
-class CamusEfDataset(Dataset, ABC):
+class EchoNetEfDataset(Dataset, ABC):
     """
     Dataset class for EchoNet-Dynamic dataset
     The dataset can be found at: https://echonet.github.io/dynamic/
@@ -79,7 +79,7 @@ class CamusEfDataset(Dataset, ABC):
             classification_classes = np.array([0, 30, 40, 55, 100])
 
         # CSV file containing file names and labels
-        filelist_df = pd.read_csv(os.path.join(dataset_path, 'info_campus.csv'))
+        filelist_df = pd.read_csv(os.path.join(dataset_path, 'info_camus.csv'))
 
         # Extract Split information
         splits = np.array(filelist_df['Split'].tolist())
@@ -624,6 +624,3 @@ class ResizeImages(object):
         return frame
 
 
-if __name__ == "__main__":
-    camus = CamusEfDataset(dataset_path='/Users/hossein/Desktop/UBC/DLWS/echognn/training')
-    print(camus[0])
