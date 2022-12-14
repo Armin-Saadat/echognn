@@ -370,9 +370,7 @@ class Engine(object):
 
             # Create the weighted adjacency matrix for the Graph Regressor
             adj = to_dense_adj(edge_index,
-                               edge_attr=torch.flatten(edge_weights[:, :, -1] / torch.max(edge_weights[:, :, -1], 1,
-                                                                                          keepdim=True)[0]),
-                               batch=self.batch_mask).squeeze(-1)
+                               edge_attr=torch.flatten(edge_weights[:, :, -1] / torch.max(edge_weights[:, :, -1], 1,keepdim=True)[0]),batch=self.batch_mask).squeeze(-1)
             adj = adj + torch.eye(adj.shape[-1], device=self.device)
 
             # Add self loops to the adj matrix
@@ -386,9 +384,7 @@ class Engine(object):
 
             # Create the weighted adjacency matrix for the Graph Regressor
             adj2 = to_dense_adj(edge_index2,
-                               edge_attr=torch.flatten(edge_weights2[:, :, -1] / torch.max(edge_weights2[:, :, -1], 1,
-                                                                                          keepdim=True)[0]),
-                               batch=self.batch_mask2).squeeze(-1)
+                               edge_attr=torch.flatten(edge_weights2[:, :, -1] / torch.max(edge_weights2[:, :, -1], 1,keepdim=True)[0]),batch=self.batch_mask2).squeeze(-1)
             adj2 = adj2 + torch.eye(adj2.shape[-1], device=self.device)
 
             # Add self loops to the adj matrix
