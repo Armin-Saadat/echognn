@@ -530,13 +530,14 @@ class Engine(object):
                 ytrue = np.array([])
                 ypred = np.array([])
 
-            for data in evalloader:
+            for data, data2 in evalloader:
                 # Move data to correct device
                 data = data.to(self.device)
+                data2 = data2.to(self.device)
 
                 # Extract different components in the data
                 x = data.x
-                edge_index2 = data.edge_index2
+                edge_index2 = data2.edge_index
                 edge_index = data.edge_index
                 regression_labels = data.regression_y
                 classification_labels = data.classification_y
