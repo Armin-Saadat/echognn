@@ -374,7 +374,7 @@ class Engine(object):
                                                                                                frame_weights=
                                                                                                node_weights[:, :, -1],
                                                                                                adj=adj)
-##################################
+
             node_weights2, edge_weights2 = self.model['attention_encoder2'](embedding)
 
             # Create the weighted adjacency matrix for the Graph Regressor
@@ -389,7 +389,6 @@ class Engine(object):
                                                                                                frame_weights=
                                                                                                node_weights2[:, :, -1],
                                                                                                adj=adj)
-###################################
 
             # Find sparsity loss
             node_sparsity_loss, edge_sparsity_loss = self.criteria['sparsity'](node_weights, edge_weights)

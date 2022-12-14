@@ -96,7 +96,7 @@ model:
     fc_hidden_dim: 16
     dropout_p: 0.5
     agg_num: 4
-    is_last_layer: False
+    is_last_layer: True
 
 # Dataset configs
 dataset:
