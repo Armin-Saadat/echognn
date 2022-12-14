@@ -872,6 +872,7 @@ class GNNEFRegressor(nn.Module):
         # output fc layer for the regressor
         print(fc_hidden_dim)
         print('-' * 100)
+        fc_hidden_dim = 13
         self.regression_mlp = nn.Sequential(nn.Linear(in_features=gnn_hidden_dims[-1],
                                                       out_features=fc_hidden_dim),
                                             nn.BatchNorm1d(fc_hidden_dim),
