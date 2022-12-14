@@ -168,7 +168,7 @@ class EchoNetEfDataset(Dataset, ABC):
             CH4_vid, CH4_idx = self.extract_test_data(CH4_vid)
         else:
             CH2_vid, CH2_idx = self.extract_train_data(CH2_vid)
-            CH4_vid, CH4_idx = self.extract_test_data(CH4_vid)
+            CH4_vid, CH4_idx = self.extract_train_data(CH4_vid)
 
         # Interpolate if needed
         if CH2_vid.shape[2] < self.num_frames:
@@ -179,23 +179,19 @@ class EchoNetEfDataset(Dataset, ABC):
 
         # Create fully connected graph
         nx_graph = nx.complete_graph(self.num_frames, create_using=nx.DiGraph())
-        for i in range(1, CH4_vid.shape[0]):
+        for i in range(1, CH2_vid.shape[0]):
             nx_graph = nx.compose(nx_graph, nx.complete_graph(range(i * self.num_frames,  (i + 1) * self.num_frames), create_using=nx.DiGraph()))
 
         g = from_networkx(nx_graph)
         g.x = CH2_vid
-        # g.x2 = CH4_vid
         g.regression_y = regression_label
         g.classification_y = classification_label
 
-        g.ch2_es_frame = self.ch2_es_frames[idx]
-        g.ch2_ed_frame = self.ch2_ed_frames[idx]
-
-        g.ch4_es_frame = self.ch4_es_frames[idx]
-        g.ch4_ed_frame = self.ch4_ed_frames[idx]
+        g.es_frame = self.ch2_es_frames[idx]
+        g.ed_frame = self.ch2_ed_frames[idx]
 
         g.vid_dir = self.patient_data_dirs[idx]
-        # g.frame_idx = CH2_idx
+        g.frame_idx = CH2_idx
 
         return g
 
