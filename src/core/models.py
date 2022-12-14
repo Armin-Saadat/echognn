@@ -697,6 +697,7 @@ class MLPNodeEncoder(nn.Module):
         :return: Torch tensor of shape Torch tensor of shape N*num_frames*1
         """
 
+        print(x.shape)
         x = x.view(x.size(0) // (self.num_frames * self.num_vids_per_sample),
                    self.num_frames * self.num_vids_per_sample, 1, -1)
 
@@ -772,7 +773,6 @@ class AttentionEncoder(nn.Module):
         """
 
         if self.node_encoder:
-            print(x.shape)
             node_z = self.node_encoder(x)
         else:
             node_z = torch.ones((x.shape[0] // self.num_frames, self.num_frames, 1), device=self.device)
