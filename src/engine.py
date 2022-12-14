@@ -198,6 +198,8 @@ class Engine(object):
                                            device=self.device,
                                            dtype=torch.long)
 
+            print(self.model_config['graph_regressor']['agg_num'])
+            print('*' * 100)
             self.batch_mask2 = torch.tensor(np.repeat(list(range(self.train_config['batch_size'] *
                                                                 self.data_config['num_clips_per_vid'])),
                                                      self.data_config['num_frames'] * dataset.num_vids_per_sample // self.model_config['graph_regressor']['agg_num']),
