@@ -1,10 +1,10 @@
 # Training and optimization configs
 train:
   num_epochs: 500
-  batch_size: 10
+  batch_size: 2
   num_workers: 0
   # Prints number of parameters in the model
-  print_model_stats: False
+  print_model_stats: True
   # Re-weight samples that are less frequent in the training set
   sample_reweighting: False
   # Indicates whether visualizations are made during test time
@@ -101,7 +101,7 @@ model:
 # Dataset configs
 dataset:
   # Path to dataset
-  dataset_path: ../EECE_571F/datasets/EchoNet-Dynamic/
+  dataset_path: ../datasets/EchoNet-Dynamic/
   # Name of the dataset
   name: echonet
   # The mean and std for the Echonet-Dynamic dataset uses to standardize data
