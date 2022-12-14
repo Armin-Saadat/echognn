@@ -541,6 +541,8 @@ class Engine(object):
 
                 # Extract different components in the data
                 x = data.x
+                print(x.shape)
+                print("*" * 100)
                 edge_index2 = data.edge_index2
                 edge_index = data.edge_index
                 regression_labels = data.regression_y
