@@ -775,6 +775,7 @@ class AttentionEncoder(nn.Module):
         x = x.view(x.shape[0]*x.shape[1], -1)
 
         if self.node_encoder:
+            print(x.shape)
             node_z = self.node_encoder(x)
         else:
             node_z = torch.ones((x.shape[0] // self.num_frames, self.num_frames, 1), device=self.device)
