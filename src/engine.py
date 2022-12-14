@@ -199,7 +199,6 @@ class Engine(object):
                                            dtype=torch.long)
 
             print(self.model_config['graph_regressor']['agg_num'])
-            print('*' * 100)
             self.batch_mask2 = torch.tensor(np.repeat(list(range(self.train_config['batch_size'] *
                                                                 self.data_config['num_clips_per_vid'])),
                                                      self.data_config['num_frames'] * dataset.num_vids_per_sample // self.model_config['graph_regressor']['agg_num']),
@@ -585,7 +584,7 @@ class Engine(object):
                 adj = to_dense_adj(edge_index2,
                                edge_attr=torch.flatten(edge_weights2[:, :, -1] / torch.max(edge_weights2[:, :, -1], 1,
                                                                                           keepdim=True)[0]),
-                               batch=self.batch_mask2).squeeze(-1)
+                               batch=eval_batch_mask2).squeeze(-1)
                 adj = adj + torch.eye(adj.shape[-1], device=self.device)
 
                 # Add self loops to the adj matrix
