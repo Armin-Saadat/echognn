@@ -612,9 +612,8 @@ class MLPNodeEncoder(nn.Module):
 
         super().__init__()
 
-        print(input_dim)
-        print(hidden_dim)
-        self.mlp1 = NRIMLP(input_dim, hidden_dim, hidden_dim, fc_dropout_p)
+
+        self.mlp1 = NRIMLP(32, hidden_dim, hidden_dim, fc_dropout_p)
         self.mlp2 = NRIMLP(hidden_dim * 2, hidden_dim, hidden_dim, fc_dropout_p)
         self.mlp3 = NRIMLP(hidden_dim, hidden_dim, hidden_dim, fc_dropout_p)
         self.mlp4 = NRIMLP(hidden_dim * 3, hidden_dim, hidden_dim, fc_dropout_p)
