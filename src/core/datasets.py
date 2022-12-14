@@ -158,12 +158,10 @@ class CamusEfDataset(Dataset, ABC):
         CH4_vid = self.trans(CH4_vid)
 
         # Perform augmentation during training
-        # if (idx in self.train_idx) and self.zoom_aug:
-        #     if np.random.randint(0, 2):
-        #         # Hardcoded for now
-        #         cine_vid = cine_vid[:, 0:90, 20:92].unsqueeze(1)
-        #         cine_vid = self.upsample(cine_vid).squeeze(1)
-        print(CH2_vid.shape)
+        if (idx in self.train_idx) and self.zoom_aug:
+            if np.random.randint(0, 2):
+                CH2_vid = self.upsample(CH2_vid[:, 0:90, 20:92].unsqueeze(1)).squeeze(1)
+                CH4_vid = self.upsample(CH4_vid[:, 0:90, 20:92].unsqueeze(1)).squeeze(1)
         # Test behaviour and Train behaviour are different
         if idx in self.test_idx or idx in self.val_idx:
             CH2_vid, CH2_idx = self.extract_test_data(CH2_vid)
@@ -174,16 +172,15 @@ class CamusEfDataset(Dataset, ABC):
 
         # Interpolate if needed
         if CH2_vid.shape[2] < self.num_frames:
-            CH2_vid = torch.cat((CH2_vid, torch.zeros(CH2_vid.shape[0], 1,
-                                                      self.num_frames - CH2_vid.shape[2], 112, 112)),
-                                dim=2)
+            CH2_vid = torch.cat((CH2_vid, torch.zeros(CH2_vid.shape[0], 1, self.num_frames - CH2_vid.shape[2], 112, 112)),dim=2)
+
+        if CH4_vid.shape[2] < self.num_frames:
+            CH4_vid = torch.cat((CH4_vid, torch.zeros(CH4_vid.shape[0], 1, self.num_frames - CH4_vid.shape[2], 112, 112)),dim=2)
 
         # Create fully connected graph
-        nx_graph = nx.complete_graph(self.num_frames, create_using=nx.DiGraph())  # 2
-        for i in range(1, CH2_vid.shape[0]):
-            nx_graph = nx.compose(nx_graph, nx.complete_graph(range(i * self.num_frames,  # * 2,
-                                                                    (i + 1) * self.num_frames),  # * 2),
-                                                              create_using=nx.DiGraph()))
+        nx_graph = nx.complete_graph(self.num_frames, create_using=nx.DiGraph())
+        for i in range(1, CH4_vid.shape[0]):
+            nx_graph = nx.compose(nx_graph, nx.complete_graph(range(i * self.num_frames,  (i + 1) * self.num_frames), create_using=nx.DiGraph()))
 
         g = from_networkx(nx_graph)
         g.x = CH2_vid
@@ -198,7 +195,7 @@ class CamusEfDataset(Dataset, ABC):
         g.ch4_ed_frame = self.ch4_ed_frames[idx]
 
         g.vid_dir = self.patient_data_dirs[idx]
-        g.frame_idx = CH2_idx
+        # g.frame_idx = CH2_idx
 
         return g
 
