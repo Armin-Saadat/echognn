@@ -452,7 +452,7 @@ class MLPEdgeEncoder(nn.Module):
     forward(x): model's forward propagation
     """
     def __init__(self,
-                 input_dim: int = 32,
+                 input_dim: int = 128,
                  fc_dropout_p: float = 0.,
                  hidden_dim: int = 100,
                  num_frames: int = 32,
@@ -595,7 +595,7 @@ class MLPNodeEncoder(nn.Module):
     forward(x): model's forward propagation
     """
     def __init__(self,
-                 input_dim: int = 32,
+                 input_dim: int = 128,
                  fc_dropout_p: float = 0.,
                  hidden_dim: int = 100,
                  num_frames: int = 32,
@@ -612,6 +612,8 @@ class MLPNodeEncoder(nn.Module):
 
         super().__init__()
 
+        print(input_dim)
+        print(hidden_dim)
         self.mlp1 = NRIMLP(input_dim, hidden_dim, hidden_dim, fc_dropout_p)
         self.mlp2 = NRIMLP(hidden_dim * 2, hidden_dim, hidden_dim, fc_dropout_p)
         self.mlp3 = NRIMLP(hidden_dim, hidden_dim, hidden_dim, fc_dropout_p)
