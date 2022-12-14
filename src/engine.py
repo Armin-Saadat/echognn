@@ -583,7 +583,7 @@ class Engine(object):
                 adj = to_dense_adj(edge_index2,
                                edge_attr=torch.flatten(edge_weights2[:, :, -1] / torch.max(edge_weights2[:, :, -1], 1,
                                                                                           keepdim=True)[0]),
-                               batch=self.batch_mask).squeeze(-1)
+                               batch=self.batch_mask2).squeeze(-1)
                 adj = adj + torch.eye(adj.shape[-1], device=self.device)
 
                 # Add self loops to the adj matrix
