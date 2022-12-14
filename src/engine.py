@@ -370,6 +370,8 @@ class Engine(object):
             adj = adj + torch.eye(adj.shape[-1], device=self.device)
 
             # Add self loops to the adj matrix
+            print(self.model['graph_regressor'].is_last_layer)
+            print("yo2" * 100)
             regression_predictions, classification_predictions, embedding = self.model['graph_regressor'](x=x,
                                                                                                frame_weights=
                                                                                                node_weights[:, :, -1],

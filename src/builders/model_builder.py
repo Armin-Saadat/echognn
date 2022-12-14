@@ -45,6 +45,8 @@ def build(config: dict,
         elif model_key == "graph_regressor":
             con = deepcopy(config[model_key])
             con.update({'is_last_layer': False})
+            print(con['is_last_layer'])
+            print("yo" * 100)
             model[model_key] = MODELS[model_key](config=con).to(device)
         else:
             model[model_key] = MODELS[model_key](config=config[model_key]).to(device)
