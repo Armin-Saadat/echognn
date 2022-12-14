@@ -101,7 +101,7 @@ model:
 # Dataset configs
 dataset:
   # Path to dataset
-  dataset_path: ../datasets/EchoNet-Dynamic/
+  dataset_path: ../EECE_571F/datasets/EchoNet-Dynamic/
   # Name of the dataset
   name: echonet
   # The mean and std for the Echonet-Dynamic dataset uses to standardize data
