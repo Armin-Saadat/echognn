@@ -871,6 +871,8 @@ class GNNEFRegressor(nn.Module):
                                          nn.ELU(inplace=True))
 
         # output fc layer for the regressor
+        print(fc_hidden_dim)
+        exit()
         self.regression_mlp = nn.Sequential(nn.Linear(in_features=gnn_hidden_dims[-1],
                                                       out_features=fc_hidden_dim),
                                             nn.BatchNorm1d(fc_hidden_dim),
@@ -931,8 +933,6 @@ class GNNEFRegressor(nn.Module):
 
         if not self.is_last_layer:
             return None, None, embed
-
-        print(x.shape)
 
         # Regression MLP
         regression_x = self.regression_mlp(x).squeeze()
