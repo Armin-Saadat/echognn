@@ -177,7 +177,8 @@ class EchoNetEfDataset(Dataset, ABC):
 
         # Create fully connected graph
         nx_graph = nx.complete_graph(self.num_frames * 2, create_using=nx.DiGraph())
-        for i in range(1, cine_vid.shape[0]):
+        print(CH2_vid.shape)
+        for i in range(1, CH2_vid.shape[0]):
             nx_graph = nx.compose(nx_graph, nx.complete_graph(range(i * self.num_frames * 2,
                                                                     (i + 1) * self.num_frames * 2),
                                                               create_using=nx.DiGraph()))
