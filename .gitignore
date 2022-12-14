@@ -412,4 +412,4 @@ data/
 logs/
 wandb/
 trained_models/
-
+nohup.out
