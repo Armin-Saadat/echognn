@@ -937,6 +937,8 @@ class GNNEFRegressor(nn.Module):
 
         # Reshape to account for num of clips
         if phase == 'train':
+            print(regression_x.shape)
+            print('8' * 100)
             regression_x = regression_x.view(regression_x.shape[0]//(self.num_vids_per_sample * self.num_clips_per_vid),
                                              -1)
             regression_x = regression_x.mean(1)
