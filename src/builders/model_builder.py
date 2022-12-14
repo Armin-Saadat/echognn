@@ -37,8 +37,10 @@ def build(config: dict,
         if model_key == "attention_encoder2":
             model[model_key] = MODELS[model_key](config=deepcopy(config["attention_encoder"]).update({'num_frames': config["attention_encoder"]['num_frames']//config["graph_regressor"]['agg_num']})).to(device)
         elif model_key == "graph_regressor2":
+            print(model_key)
             model[model_key] = MODELS[model_key](config=deepcopy(config["graph_regressor"]).update({'num_frames': config["graph_regressor"]['num_frames']//config["graph_regressor"]['agg_num']})).to(device)
         elif model_key == "graph_regressor":
+            print(model_key)
             model[model_key] = MODELS[model_key](config=deepcopy(config[model_key]).update({'is_last_layer': True})).to(device)
         else:
             model[model_key] = MODELS[model_key](config=config[model_key]).to(device)
