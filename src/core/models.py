@@ -929,12 +929,12 @@ class GNNEFRegressor(nn.Module):
         x = torch.mean(x.view(x.shape[0], x.shape[1]//self.agg_num, self.agg_num, x.shape[2]), dim=2)
         embed = x
 
-        print(x.shape)
+        print(x.shape, self.is_last_layer)
+
         if not self.is_last_layer:
             return None, None, embed
 
-        print('-' * 100)
-        print(x.shape)
+        print(x.shape, self.is_last_layer)
 
         # Regression MLP
         regression_x = self.regression_mlp(x).squeeze()
