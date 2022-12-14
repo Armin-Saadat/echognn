@@ -95,6 +95,7 @@ model:
     gnn_hidden_dims: [128, 64, 32]
     fc_hidden_dim: 16
     dropout_p: 0.5
+    agg_num: 4
 
 # Dataset configs
 dataset:
