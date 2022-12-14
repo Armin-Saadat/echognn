@@ -240,9 +240,9 @@ class Custom3DConv(nn.Module):
     """
 
     def __init__(self,
-                 out_channels: list[int] = None,
-                 kernel_sizes: list[int] = None,
-                 pool_sizes: list[int] = None,
+                 out_channels: None,
+                 kernel_sizes: None,
+                 pool_sizes: None,
                  output_dim: int = 128,
                  cnn_dropout_p: float = 0):
         """
