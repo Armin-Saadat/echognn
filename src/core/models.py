@@ -934,8 +934,8 @@ class GNNEFRegressor(nn.Module):
         print(x.shape)
         print('*' * 100)
 
-        if not self.is_last_layer:
-            return None, None, embed
+        # if not self.is_last_layer:
+        #     return None, None, embed
 
         # Regression MLP
         regression_x = self.regression_mlp(x).squeeze()
