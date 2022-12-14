@@ -37,12 +37,12 @@ def build(config: dict,
         if model_key == "attention_encoder2":
             con = deepcopy(config["attention_encoder"])
             con.update({'num_frames': config["attention_encoder"]['num_frames']//config["graph_regressor"]['agg_num']})
-            con.update({'input_dim': 32})
+            con.update({'input_dim': config["graph_regressor"]["gnn_hidden_dims"][-1]})
             model[model_key] = MODELS[model_key](config=con).to(device)
         elif model_key == "graph_regressor2":
             con = deepcopy(config["graph_regressor"])
             con.update({'num_frames': config["graph_regressor"]['num_frames']//config["graph_regressor"]['agg_num']})
-            con.update({'input_dim': 32})
+            con.update({'input_dim': config["graph_regressor"]["gnn_hidden_dims"][-1]})
             model[model_key] = MODELS[model_key](config=con).to(device)
         elif model_key == "graph_regressor":
             con = deepcopy(config[model_key])
