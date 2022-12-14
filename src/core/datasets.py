@@ -13,9 +13,11 @@ from torch.nn import Upsample
 import cv2
 from random import randint
 from math import isnan
+import SimpleITK as sitk
+from skimage.transform import rescale, resize
 
 
-class EchoNetEfDataset(Dataset, ABC):
+class CamusEfDataset(Dataset, ABC):
     """
     Dataset class for EchoNet-Dynamic dataset
     The dataset can be found at: https://echonet.github.io/dynamic/
@@ -77,7 +79,7 @@ class EchoNetEfDataset(Dataset, ABC):
             classification_classes = np.array([0, 30, 40, 55, 100])
 
         # CSV file containing file names and labels
-        filelist_df = pd.read_csv(os.path.join(dataset_path, 'FileList.csv'))
+        filelist_df = pd.read_csv(os.path.join(dataset_path, 'info_campus.csv'))
 
         # Extract Split information
         splits = np.array(filelist_df['Split'].tolist())
@@ -86,18 +88,20 @@ class EchoNetEfDataset(Dataset, ABC):
         self.test_idx = np.where(splits == 'TEST')[0]
 
         # Extract ES and ED frame indices
-        self.es_frames = torch.tensor(np.array(filelist_df['ESFrame']), dtype=torch.int32)
-        self.ed_frames = torch.tensor(np.array(filelist_df['EDFrame']), dtype=torch.int32)
+        self.ch2_es_frames = torch.tensor(np.array(filelist_df['2CH_ESFrame']), dtype=torch.int32)
+        self.ch2_ed_frames = torch.tensor(np.array(filelist_df['2CH_EDFrame']), dtype=torch.int32)
+
+        self.ch4_es_frames = torch.tensor(np.array(filelist_df['4CH_ESFrame']), dtype=torch.int32)
+        self.ch4_ed_frames = torch.tensor(np.array(filelist_df['4CH_EDFrame']), dtype=torch.int32)
 
         # Extract video file names
         filenames = np.array(filelist_df['FileName'].tolist())
 
         # All file paths
         self.patient_data_dirs = [os.path.join(dataset_path,
-                                               'Videos',
-                                               file_name + '.avi')
+                                               file_name)
                                   for file_name
-                                  in filenames.tolist()]
+                                  in list(filenames)]
 
         # Get the EF labels for regression and classification
         self.regression_labels = np.array(filelist_df[label_string].tolist())
@@ -110,7 +114,7 @@ class EchoNetEfDataset(Dataset, ABC):
         hist, bins = np.histogram(self.regression_labels, bins=60)
         hist = hist + 100
         hist = np.clip(hist, a_min=0, a_max=400)
-        hist = 1/hist / np.max(1/hist)
+        hist = 1 / hist / np.max(1 / hist)
         self.sample_weights = hist
         self.sample_intervals = bins
         self.sample_intervals[0] = 0
@@ -120,8 +124,7 @@ class EchoNetEfDataset(Dataset, ABC):
         self.num_samples = len(self.patient_data_dirs)
 
         # Normalization operation
-        self.trans = Compose([ToTensor(),
-                              Normalize((mean), (std))])
+        self.trans = Compose([ResizeImages(size=(112, 112)), ToTensor(), Normalize((mean), (std))])
 
         # Interpolation needed if augmentation is required
         self.upsample = None
@@ -148,48 +151,54 @@ class EchoNetEfDataset(Dataset, ABC):
         regression_label = self.regression_labels[idx]
         classification_label = self.classification_labels[idx]
 
-        # Get the video
-        cine_vid = self._loadvideo(self.patient_data_dirs[idx])
-
+        # Get the videos
+        CH2_vid, CH4_vid = self._loadvideo(self.patient_data_dirs[idx])
         # Transform video
-        cine_vid = self.trans(cine_vid)
+        CH2_vid = self.trans(CH2_vid)
+        CH4_vid = self.trans(CH4_vid)
 
         # Perform augmentation during training
-        if (idx in self.train_idx) and self.zoom_aug:
-            if np.random.randint(0, 2):
-                # Hardcoded for now
-                cine_vid = cine_vid[:,  0:90, 20:92].unsqueeze(1)
-                cine_vid = self.upsample(cine_vid).squeeze(1)
-
+        # if (idx in self.train_idx) and self.zoom_aug:
+        #     if np.random.randint(0, 2):
+        #         # Hardcoded for now
+        #         cine_vid = cine_vid[:, 0:90, 20:92].unsqueeze(1)
+        #         cine_vid = self.upsample(cine_vid).squeeze(1)
+        print(CH2_vid.shape)
         # Test behaviour and Train behaviour are different
         if idx in self.test_idx or idx in self.val_idx:
-            cine_vid, frame_idx = self.extract_test_data(cine_vid)
+            CH2_vid, CH2_idx = self.extract_test_data(CH2_vid)
+            CH4_vid, CH4_idx = self.extract_test_data(CH4_vid)
         else:
-            cine_vid, frame_idx = self.extract_train_data(cine_vid)
+            CH2_vid, CH2_idx = self.extract_train_data(CH2_vid)
+            CH4_vid, CH4_idx = self.extract_test_data(CH4_vid)
 
         # Interpolate if needed
-        if cine_vid.shape[2] < self.num_frames:
-            cine_vid = torch.cat((cine_vid, torch.zeros(cine_vid.shape[0], 1,
-                                                        self.num_frames - cine_vid.shape[2], 112, 112)),
-                                 dim=2)
+        if CH2_vid.shape[2] < self.num_frames:
+            CH2_vid = torch.cat((CH2_vid, torch.zeros(CH2_vid.shape[0], 1,
+                                                      self.num_frames - CH2_vid.shape[2], 112, 112)),
+                                dim=2)
 
         # Create fully connected graph
-        nx_graph = nx.complete_graph(self.num_frames, create_using=nx.DiGraph())
-        for i in range(1, cine_vid.shape[0]):
-            nx_graph = nx.compose(nx_graph, nx.complete_graph(range(i*self.num_frames,
-                                                                    (i+1)*self.num_frames),
+        nx_graph = nx.complete_graph(self.num_frames, create_using=nx.DiGraph())  # 2
+        for i in range(1, CH2_vid.shape[0]):
+            nx_graph = nx.compose(nx_graph, nx.complete_graph(range(i * self.num_frames,  # * 2,
+                                                                    (i + 1) * self.num_frames),  # * 2),
                                                               create_using=nx.DiGraph()))
 
         g = from_networkx(nx_graph)
-
-        # Add images and label to graph
-        g.x = cine_vid
+        g.x = CH2_vid
+        # g.x2 = CH4_vid
         g.regression_y = regression_label
         g.classification_y = classification_label
-        g.es_frame = self.es_frames[idx]
-        g.ed_frame = self.ed_frames[idx]
+
+        g.ch2_es_frame = self.ch2_es_frames[idx]
+        g.ch2_ed_frame = self.ch2_ed_frames[idx]
+
+        g.ch4_es_frame = self.ch4_es_frames[idx]
+        g.ch4_ed_frame = self.ch4_ed_frames[idx]
+
         g.vid_dir = self.patient_data_dirs[idx]
-        g.frame_idx = frame_idx
+        g.frame_idx = CH2_idx
 
         return g
 
@@ -244,7 +253,6 @@ class EchoNetEfDataset(Dataset, ABC):
 
         # Extract number of frames per video
         video_num_frames = cine_vid.shape[0]
-
         # if the required number of frames is larger than the available number of frames in the video
         # take the whole video
         if self.num_frames > video_num_frames:
@@ -305,25 +313,30 @@ class EchoNetEfDataset(Dataset, ABC):
         :return: numpy array of dimension H*W*T
         """
 
-        if not os.path.exists(filename):
-            raise FileNotFoundError(filename)
-        capture = cv2.VideoCapture(filename)
+        # if not os.path.exists(filename):
+        #     raise FileNotFoundError(filename)
+        # capture = cv2.VideoCapture(filename)
+        #
+        # frame_count = int(capture.get(cv2.CAP_PROP_FRAME_COUNT))
+        # frame_width = int(capture.get(cv2.CAP_PROP_FRAME_WIDTH))
+        # frame_height = int(capture.get(cv2.CAP_PROP_FRAME_HEIGHT))
+        #
+        # v = np.zeros((frame_height, frame_width, frame_count), np.uint8)
+        #
+        # for count in range(frame_count):
+        #     ret, frame = capture.read()
+        #     if not ret:
+        #         raise ValueError("Failed to load frame #{} of {}.".format(count, filename))
+        #
+        #     frame = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
+        #     v[:, :, count] = frame
 
-        frame_count = int(capture.get(cv2.CAP_PROP_FRAME_COUNT))
-        frame_width = int(capture.get(cv2.CAP_PROP_FRAME_WIDTH))
-        frame_height = int(capture.get(cv2.CAP_PROP_FRAME_HEIGHT))
+        CH2_file = os.path.join(filename, os.path.basename(filename) + '_2CH_sequence.mhd')
+        CH4_file = os.path.join(filename, os.path.basename(filename) + '_4CH_sequence.mhd')
 
-        v = np.zeros((frame_height, frame_width, frame_count), np.uint8)
-
-        for count in range(frame_count):
-            ret, frame = capture.read()
-            if not ret:
-                raise ValueError("Failed to load frame #{} of {}.".format(count, filename))
-
-            frame = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
-            v[:, :, count] = frame
-
-        return v
+        CH2_v = sitk.GetArrayFromImage(sitk.ReadImage(CH2_file, sitk.sitkFloat32))
+        CH4_v = sitk.GetArrayFromImage(sitk.ReadImage(CH4_file, sitk.sitkFloat32))
+        return CH2_v, CH4_v
 
 
 class PretrainEchoNetEfDataset(Dataset, ABC):
@@ -395,8 +408,8 @@ class PretrainEchoNetEfDataset(Dataset, ABC):
 
         # All file paths for the required split
         self.patient_data_dirs = np.array([os.path.join(dataset_path,
-                                               'Videos',
-                                               file_name + '.avi')
+                                                        'Videos',
+                                                        file_name + '.avi')
                                            for file_name
                                            in filenames.tolist()])
         self.patient_data_dirs = self.patient_data_dirs[split_idx]
@@ -456,7 +469,7 @@ class PretrainEchoNetEfDataset(Dataset, ABC):
         if self.train and self.zoom_aug:
             if np.random.randint(0, 2):
                 # Hardcoded for now
-                cine_vid = cine_vid[:,  0:90, 20:92].unsqueeze(1)
+                cine_vid = cine_vid[:, 0:90, 20:92].unsqueeze(1)
                 cine_vid = self.upsample(cine_vid).squeeze(1)
 
         # Get number of frames in the video
@@ -471,8 +484,8 @@ class PretrainEchoNetEfDataset(Dataset, ABC):
             frame_idx = np.arange(start=0, stop=video_num_frames)
         else:
             initial_frame_start = max(0, primary_foi - self.num_frames)
-            initial_frame = randint(initial_frame_start, primary_foi+1)
-            last_frame = min(initial_frame+self.num_frames, video_num_frames)
+            initial_frame = randint(initial_frame_start, primary_foi + 1)
+            last_frame = min(initial_frame + self.num_frames, video_num_frames)
             frame_idx = np.arange(initial_frame, last_frame)
 
         # Extract correct label, mask and video frames
@@ -488,7 +501,7 @@ class PretrainEchoNetEfDataset(Dataset, ABC):
 
         # Interpolate if needed
         if cine_vid.shape[2] < self.num_frames:
-            cine_vid = torch.cat((cine_vid, torch.zeros(1, 1, self.num_frames-cine_vid.shape[2], 112, 112)), dim=2)
+            cine_vid = torch.cat((cine_vid, torch.zeros(1, 1, self.num_frames - cine_vid.shape[2], 112, 112)), dim=2)
 
         # Create fully connected graph
         g = from_networkx(nx.complete_graph(cine_vid.shape[2], create_using=nx.DiGraph()))
@@ -572,10 +585,10 @@ class PretrainEchoNetEfDataset(Dataset, ABC):
 
         mask = np.zeros(video_num_frames)
 
-        mask[max(primary_foi-self.num_neighbourhood_frames, 0):
-             min(primary_foi+self.num_neighbourhood_frames + 1, video_num_frames)] = 1
-        mask[max(secondary_foi-self.num_neighbourhood_frames, 0):
-             min(secondary_foi+self.num_neighbourhood_frames + 1, video_num_frames)] = 1
+        mask[max(primary_foi - self.num_neighbourhood_frames, 0):
+             min(primary_foi + self.num_neighbourhood_frames + 1, video_num_frames)] = 1
+        mask[max(secondary_foi - self.num_neighbourhood_frames, 0):
+             min(secondary_foi + self.num_neighbourhood_frames + 1, video_num_frames)] = 1
 
         return mask
 
@@ -594,9 +607,26 @@ class PretrainEchoNetEfDataset(Dataset, ABC):
 
         label = np.zeros(video_num_frames)
 
-        label[max(primary_foi-self.spread_label_by, 0):
-              min(primary_foi+self.spread_label_by + 1, video_num_frames)] = 1
-        label[max(secondary_foi-self.spread_label_by, 0):
-              min(secondary_foi+self.spread_label_by + 1, video_num_frames)] = 1
+        label[max(primary_foi - self.spread_label_by, 0):
+              min(primary_foi + self.spread_label_by + 1, video_num_frames)] = 1
+        label[max(secondary_foi - self.spread_label_by, 0):
+              min(secondary_foi + self.spread_label_by + 1, video_num_frames)] = 1
 
         return label
+
+
+class ResizeImages(object):
+    def __init__(self, size):
+        self.size = size
+
+    def __call__(self, frame):
+        frame = resize(frame.transpose([2, 1, 0]),
+                       self.size, mode='constant',
+                       anti_aliasing=True)
+
+        return frame
+
+
+if __name__ == "__main__":
+    camus = CamusEfDataset(dataset_path='/Users/hossein/Desktop/UBC/DLWS/echognn/training')
+    print(camus[0])
