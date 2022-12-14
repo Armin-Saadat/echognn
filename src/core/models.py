@@ -747,9 +747,6 @@ class AttentionEncoder(nn.Module):
         super().__init__()
 
         encoder_config = deepcopy(config)
-
-        print(encoder_config['input_dim'])
-        print("*" * 100)
         name = encoder_config.pop('name')
         self.num_frames = encoder_config['num_frames']
         self.device = encoder_config.pop('device')
@@ -761,6 +758,8 @@ class AttentionEncoder(nn.Module):
         self.node_encoder = None
         self.edge_encoder = None
 
+        print(encoder_config['input_dim'])
+        print("*" * 100)
         if self.encoder_type == 'node&edge' or self.encoder_type == 'node':
             self.node_encoder = ENCODERS['node'](**encoder_config, device=self.device)
 
