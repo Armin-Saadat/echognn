@@ -930,13 +930,11 @@ class GNNEFRegressor(nn.Module):
         embed = x
 
         print(x.shape)
-        print(fc_hidden_dim)
         if not self.is_last_layer:
             return None, None, embed
 
         print('-' * 100)
         print(x.shape)
-        print(fc_hidden_dim)
 
         # Regression MLP
         regression_x = self.regression_mlp(x).squeeze()
