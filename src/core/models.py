@@ -932,10 +932,7 @@ class GNNEFRegressor(nn.Module):
             return None, None, embed
 
         # Regression MLP
-        print(x.shape)
         x = x.squeeze(1)
-        print(x.shape)
-        print('*' * 100)
         regression_x = self.regression_mlp(x).squeeze()
 
         # Reshape to account for num of clips
