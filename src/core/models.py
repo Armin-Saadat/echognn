@@ -757,9 +757,6 @@ class AttentionEncoder(nn.Module):
 
         self.node_encoder = None
         self.edge_encoder = None
-
-        print(encoder_config['input_dim'])
-        print("*" * 100)
         if self.encoder_type == 'node&edge' or self.encoder_type == 'node':
             self.node_encoder = ENCODERS['node'](**encoder_config, device=self.device)
 
@@ -773,9 +770,6 @@ class AttentionEncoder(nn.Module):
         :param x: torch.tensor, input tensor of shape N*num_frames*d
         :return: tuple of node and edge weights
         """
-
-        print(x.shape)
-        x = x.view(x.shape[0]*x.shape[1], -1)
 
         if self.node_encoder:
             print(x.shape)

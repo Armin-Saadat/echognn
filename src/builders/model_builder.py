@@ -42,6 +42,7 @@ def build(config: dict,
         elif model_key == "graph_regressor2":
             con = deepcopy(config["graph_regressor"])
             con.update({'num_frames': config["graph_regressor"]['num_frames']//config["graph_regressor"]['agg_num']})
+            con.update({'input_dim': 32})
             model[model_key] = MODELS[model_key](config=con).to(device)
         elif model_key == "graph_regressor":
             con = deepcopy(config[model_key])
