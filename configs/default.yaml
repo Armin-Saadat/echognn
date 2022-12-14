@@ -96,6 +96,7 @@ model:
     fc_hidden_dim: 16
     dropout_p: 0.5
     agg_num: 4
+    is_last_layer: False
 
 # Dataset configs
 dataset:
@@ -122,3 +123,4 @@ dataset:
   zoom_aug: True
   # The overlap between consecutive clips during test time (0 for no overlap)
   test_clip_overlap: 0
+  agg_num: 4

@@ -36,9 +36,12 @@ def build(config: dict,
     for model_key in config.keys():
         if model_key == "attention_encoder2":
             model[model_key] = MODELS[model_key](config=deepcopy(config[model_key]).update({'num_frames': config["attention_encoder"]['num_frames']//config["graph_regressor"]['agg_num']})).to(device)
-        if model_key == "graph_regressor2":
+        elif model_key == "graph_regressor2":
             model[model_key] = MODELS[model_key](config=deepcopy(config[model_key]).update({'num_frames': config["graph_regressor"]['num_frames']//config["graph_regressor"]['agg_num']})).to(device)
-        model[model_key] = MODELS[model_key](config=config[model_key]).to(device)
+        elif model_key == "graph_regressor":
+            model[model_key] = MODELS[model_key](config=deepcopy(config[model_key]).update({'is_last_layer': True})).to(device)
+        else:
+            model[model_key] = MODELS[model_key](config=config[model_key]).to(device)
 
     logger.info_important('Model is built.')
 

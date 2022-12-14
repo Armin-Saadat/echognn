@@ -54,7 +54,8 @@ class EchoNetEfDataset(Dataset, ABC):
                  num_frames_per_cycle: int = 64,
                  classification_classes: numpy.ndarray = None,
                  zoom_aug: bool = False,
-                 test_clip_overlap: int = 0):
+                 test_clip_overlap: int = 0,
+                 agg_num: int = 4):
         """
         :param dataset_path: str, path to dataset directory
         :param num_frames: int, number of frames per clip
@@ -135,6 +136,7 @@ class EchoNetEfDataset(Dataset, ABC):
         self.num_frames_per_cycle = num_frames_per_cycle
         self.zoom_aug = zoom_aug
         self.test_clip_overlap = test_clip_overlap
+        self.agg_num = agg_num
 
     def __getitem__(self, idx: int) -> torch_geometric.data.data:
         """
@@ -180,6 +182,12 @@ class EchoNetEfDataset(Dataset, ABC):
                                                                     (i+1)*self.num_frames),
                                                               create_using=nx.DiGraph()))
 
+        nx_graph2 = nx.complete_graph(self.num_frames//self.agg_num, create_using=nx.DiGraph())
+        for i in range(1, cine_vid.shape[0]):
+            nx_graph2 = nx.compose(nx_graph2, nx.complete_graph(range(i*self.num_frames//self.agg_num,
+                                                                    (i+1)*self.num_frames//self.agg_num),
+                                                              create_using=nx.DiGraph()))
+
         g = from_networkx(nx_graph)
 
         # Add images and label to graph
@@ -190,6 +198,7 @@ class EchoNetEfDataset(Dataset, ABC):
         g.ed_frame = self.ed_frames[idx]
         g.vid_dir = self.patient_data_dirs[idx]
         g.frame_idx = frame_idx
+        g.next_graph = from_networkx(nx_graph2)
 
         return g
 

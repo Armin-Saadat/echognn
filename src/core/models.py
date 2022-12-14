@@ -815,7 +815,9 @@ class GNNEFRegressor(nn.Module):
                  num_frames=32,
                  num_vids_per_sample=1,
                  num_clips_per_vid=1,
-                 num_classes=4):
+                 num_classes=4,
+                 agg_num=4,
+                 is_last_layer=False):
         """
         :param input_dim: int, Input embeddings dimension
         :param dropout_p: float, dropout rate
@@ -891,6 +893,8 @@ class GNNEFRegressor(nn.Module):
         self.num_vids_per_sample = num_vids_per_sample
         self.num_clips_per_vid = num_clips_per_vid
         self.num_frames = num_frames
+        self.agg_num = agg_num
+        self.is_last_layer = is_last_layer
 
     def forward(self,
                 x: torch.tensor,
@@ -922,7 +926,11 @@ class GNNEFRegressor(nn.Module):
         frame_weights = frame_weights.unsqueeze(-1)
         frame_weights = frame_weights / torch.max(frame_weights, 1, keepdim=True)[0]
         x = frame_weights * x
-        x = torch.mean(x, dim=1)
+        x = torch.mean(x.view(x.shape[0], x.shape[1]//self.agg_num, self.agg_num, x.shape[2]), dim=2)
+        embed = x
+
+        if not is_last_layer:
+            return None, None, embed
 
         # Regression MLP
         regression_x = self.regression_mlp(x).squeeze()
@@ -947,7 +955,7 @@ class GNNEFRegressor(nn.Module):
         else:
             classification_x = classification_x.mean(0).unsqueeze(0)
 
-        return regression_x, classification_x
+        return regression_x, classification_x, embed
 
 
 REGRESSORS = {'gnn': GNNEFRegressor}

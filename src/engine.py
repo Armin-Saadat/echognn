@@ -351,6 +351,7 @@ class Engine(object):
 
             # Extract different components in the data
             x = data.x
+            edge_index2 = data.next_graph.edge_index
             edge_index = data.edge_index
             regression_labels = data.regression_y
             classification_labels = data.classification_y
@@ -369,13 +370,32 @@ class Engine(object):
             adj = adj + torch.eye(adj.shape[-1], device=self.device)
 
             # Add self loops to the adj matrix
-            regression_predictions, classification_predictions = self.model['graph_regressor'](x=x,
+            regression_predictions, classification_predictions, embedding = self.model['graph_regressor'](x=x,
                                                                                                frame_weights=
                                                                                                node_weights[:, :, -1],
                                                                                                adj=adj)
+##################################
+            node_weights2, edge_weights2 = self.model['attention_encoder2'](embedding)
+
+            # Create the weighted adjacency matrix for the Graph Regressor
+            adj = to_dense_adj(edge_index2,
+                               edge_attr=torch.flatten(edge_weights2[:, :, -1] / torch.max(edge_weights2[:, :, -1], 1,
+                                                                                          keepdim=True)[0]),
+                               batch=self.batch_mask).squeeze(-1)
+            adj = adj + torch.eye(adj.shape[-1], device=self.device)
+
+            # Add self loops to the adj matrix
+            regression_predictions, classification_predictions, _ = self.model['graph_regressor2'](x=embedding,
+                                                                                               frame_weights=
+                                                                                               node_weights2[:, :, -1],
+                                                                                               adj=adj)
+###################################
 
             # Find sparsity loss
             node_sparsity_loss, edge_sparsity_loss = self.criteria['sparsity'](node_weights, edge_weights)
+            node_sparsity_loss2, edge_sparsity_loss2 = self.criteria['sparsity'](node_weights2, edge_weights2)
+            node_sparsity_loss += node_sparsity_loss2
+            edge_sparsity_loss += edge_sparsity_loss2 
 
             # Compute regression loss
             regression_loss = self.criteria['regression'](regression_predictions, regression_labels)
@@ -512,6 +532,7 @@ class Engine(object):
 
                 # Extract different components in the data
                 x = data.x
+                edge_index2 = data.next_graph.edge_index
                 edge_index = data.edge_index
                 regression_labels = data.regression_y
                 classification_labels = data.classification_y
@@ -536,13 +557,28 @@ class Engine(object):
                 adj = adj + torch.eye(adj.shape[-1], device=self.device)
 
                 # Add self loops to the adj matrix
-                regression_predictions, classification_predictions = self.model['graph_regressor'](x=x,
+                regression_predictions, classification_predictions, embedding = self.model['graph_regressor'](x=x,
                                                                                                    frame_weights=
                                                                                                    node_weights[:, :,
                                                                                                                 -1],
                                                                                                    adj=adj,
                                                                                                    phase=phase)
+#######################
+                node_weights2, edge_weights2 = self.model['attention_encoder2'](embedding)
 
+                # Create the weighted adjacency matrix for the Graph Regressor
+                adj = to_dense_adj(edge_index2,
+                               edge_attr=torch.flatten(edge_weights2[:, :, -1] / torch.max(edge_weights2[:, :, -1], 1,
+                                                                                          keepdim=True)[0]),
+                               batch=self.batch_mask).squeeze(-1)
+                adj = adj + torch.eye(adj.shape[-1], device=self.device)
+
+                # Add self loops to the adj matrix
+                regression_predictions, classification_predictions, _ = self.model['graph_regressor2'](x=embedding,
+                                                                                               frame_weights=
+                                                                                               node_weights2[:, :, -1],
+                                                                                               adj=adj)
+#######################
                 # Add to array of ground truth labels and predictions
                 if self.train_config['eval_visualization']:
                     ytrue = np.concatenate((ytrue, regression_labels.detach().cpu().numpy()),
@@ -552,6 +588,9 @@ class Engine(object):
 
                 # Find sparsity loss
                 node_sparsity_loss, edge_sparsity_loss = self.criteria['sparsity'](node_weights, edge_weights)
+                node_sparsity_loss2, edge_sparsity_loss2 = self.criteria['sparsity'](node_weights2, edge_weights2)
+                node_sparsity_loss += node_sparsity_loss2
+                edge_sparsity_loss += edge_sparsity_loss2 
 
                 # Compute regression loss
                 regression_loss = self.criteria['regression'](regression_predictions, regression_labels).mean()
