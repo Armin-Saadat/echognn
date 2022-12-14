@@ -423,7 +423,6 @@ class Engine(object):
                     update_evaluators(self.evaluators,
                                       regression_predictions.detach().cpu().numpy(),
                                       regression_labels.detach().cpu().numpy())
-            break
 
         # Compute training time
         train_time = time.time() - train_start
