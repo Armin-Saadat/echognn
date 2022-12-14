@@ -450,6 +450,8 @@ class Engine(object):
                                       regression_predictions.detach().cpu().numpy(),
                                       regression_labels.detach().cpu().numpy())
 
+                break
+
         # Compute training time
         train_time = time.time() - train_start
         with torch.no_grad():
@@ -549,6 +551,11 @@ class Engine(object):
                                                device=self.device,
                                                dtype=torch.long)
 
+                eval_batch_mask2 = torch.tensor(np.repeat(list(range(x.shape[0])),
+                                                         self.data_config['num_frames'] * self.num_vids_per_sample // self.model_config['graph_regressor']['agg_num']),
+                                               device=self.device,
+                                               dtype=torch.long)
+
                 # Create embeddings from video inputs
                 x = self.model['video_encoder'](x)
 
@@ -569,7 +576,7 @@ class Engine(object):
                                                                                                                 -1],
                                                                                                    adj=adj,
                                                                                                    phase=phase)
-#######################
+
                 node_weights2, edge_weights2 = self.model['attention_encoder2'](embedding)
 
                 # Create the weighted adjacency matrix for the Graph Regressor
@@ -584,7 +591,7 @@ class Engine(object):
                                                                                                frame_weights=
                                                                                                node_weights2[:, :, -1],
                                                                                                adj=adj)
-#######################
+
                 # Add to array of ground truth labels and predictions
                 if self.train_config['eval_visualization']:
                     ytrue = np.concatenate((ytrue, regression_labels.detach().cpu().numpy()),
