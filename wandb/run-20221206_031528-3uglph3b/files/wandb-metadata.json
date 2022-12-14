@@ -1,0 +1,88 @@
+{
+    "os": "Linux-5.4.0-126-generic-x86_64-with-glibc2.31",
+    "python": "3.10.8",
+    "heartbeatAt": "2022-12-06T11:15:28.827062",
+    "startedAt": "2022-12-06T11:15:28.414772",
+    "docker": null,
+    "cuda": null,
+    "args": [
+        "--config_path",
+        "./configs/default.yaml"
+    ],
+    "state": "running",
+    "program": "/home/atrin/EECE_571F/echognn/run.py",
+    "codePath": "run.py",
+    "git": {
+        "remote": "https://github.com/Armin-Saadat/echognn.git",
+        "commit": "26a0ab9a6f72a1d6d2455c14d64a8fdd7ba5c645"
+    },
+    "email": "armin2saadat@gmail.com",
+    "root": "/home/atrin/EECE_571F/echognn",
+    "host": "purang29.ece.ubc.ca",
+    "username": "atrin",
+    "executable": "/home/atrin/EECE_571F/miniconda3/envs/myenv/bin/python",
+    "cpu_count": 4,
+    "cpu_count_logical": 8,
+    "cpu_freq": {
+        "current": 2781.999875,
+        "min": 800.0,
+        "max": 4000.0
+    },
+    "cpu_freq_per_core": [
+        {
+            "current": 2898.366,
+            "min": 800.0,
+            "max": 4000.0
+        },
+        {
+            "current": 3083.606,
+            "min": 800.0,
+            "max": 4000.0
+        },
+        {
+            "current": 2806.792,
+            "min": 800.0,
+            "max": 4000.0
+        },
+        {
+            "current": 2632.457,
+            "min": 800.0,
+            "max": 4000.0
+        },
+        {
+            "current": 2809.155,
+            "min": 800.0,
+            "max": 4000.0
+        },
+        {
+            "current": 2723.039,
+            "min": 800.0,
+            "max": 4000.0
+        },
+        {
+            "current": 2714.838,
+            "min": 800.0,
+            "max": 4000.0
+        },
+        {
+            "current": 2587.746,
+            "min": 800.0,
+            "max": 4000.0
+        }
+    ],
+    "disk": {
+        "total": 81.80674743652344,
+        "used": 45.709659576416016
+    },
+    "gpu": "NVIDIA TITAN RTX",
+    "gpu_count": 1,
+    "gpu_devices": [
+        {
+            "name": "NVIDIA TITAN RTX",
+            "memory_total": 25395462144
+        }
+    ],
+    "memory": {
+        "total": 15.546428680419922
+    }
+}

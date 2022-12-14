@@ -408,3 +408,7 @@ pip-selfcheck.json
 
 data/
 logs/
+wandb/
+wandb/.
+wandb/*
+trained_models/

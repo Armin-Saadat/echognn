@@ -1,0 +1,90 @@
+{
+    "os": "Linux-5.4.0-126-generic-x86_64-with-glibc2.31",
+    "python": "3.10.8",
+    "heartbeatAt": "2022-12-13T03:20:44.930046",
+    "startedAt": "2022-12-13T03:20:44.512713",
+    "docker": null,
+    "cuda": null,
+    "args": [
+        "--config_path",
+        "./configs/default.yaml",
+        "--save_dir",
+        "./trained_models/sync_2vids/"
+    ],
+    "state": "running",
+    "program": "/home/atrin/EECE_571F/echognn/run.py",
+    "codePath": "run.py",
+    "git": {
+        "remote": "https://github.com/Armin-Saadat/echognn.git",
+        "commit": "f58aabb08ff289fdd86c325d448c8884777fbe95"
+    },
+    "email": "armin2saadat@gmail.com",
+    "root": "/home/atrin/EECE_571F/echognn",
+    "host": "purang29.ece.ubc.ca",
+    "username": "atrin",
+    "executable": "/home/atrin/EECE_571F/miniconda3/envs/myenv/bin/python",
+    "cpu_count": 4,
+    "cpu_count_logical": 8,
+    "cpu_freq": {
+        "current": 3797.504625,
+        "min": 800.0,
+        "max": 4000.0
+    },
+    "cpu_freq_per_core": [
+        {
+            "current": 3735.247,
+            "min": 800.0,
+            "max": 4000.0
+        },
+        {
+            "current": 3787.832,
+            "min": 800.0,
+            "max": 4000.0
+        },
+        {
+            "current": 3898.222,
+            "min": 800.0,
+            "max": 4000.0
+        },
+        {
+            "current": 3802.856,
+            "min": 800.0,
+            "max": 4000.0
+        },
+        {
+            "current": 3721.851,
+            "min": 800.0,
+            "max": 4000.0
+        },
+        {
+            "current": 3754.954,
+            "min": 800.0,
+            "max": 4000.0
+        },
+        {
+            "current": 3864.616,
+            "min": 800.0,
+            "max": 4000.0
+        },
+        {
+            "current": 3814.459,
+            "min": 800.0,
+            "max": 4000.0
+        }
+    ],
+    "disk": {
+        "total": 81.80674743652344,
+        "used": 45.66823959350586
+    },
+    "gpu": "NVIDIA TITAN RTX",
+    "gpu_count": 1,
+    "gpu_devices": [
+        {
+            "name": "NVIDIA TITAN RTX",
+            "memory_total": 25395462144
+        }
+    ],
+    "memory": {
+        "total": 15.546428680419922
+    }
+}
