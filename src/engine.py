@@ -450,7 +450,7 @@ class Engine(object):
                                       regression_predictions.detach().cpu().numpy(),
                                       regression_labels.detach().cpu().numpy())
 
-                break
+            break
 
         # Compute training time
         train_time = time.time() - train_start
@@ -579,8 +579,7 @@ class Engine(object):
                                                                                                    adj=adj,
                                                                                                    phase=phase)
 
-                print(embedding.shape)
-                print('*' * 100)
+
                 node_weights2, edge_weights2 = self.model['attention_encoder2'](embedding)
 
                 # Create the weighted adjacency matrix for the Graph Regressor
@@ -629,6 +628,8 @@ class Engine(object):
                     update_evaluators(self.evaluators,
                                       regression_predictions.detach().cpu().numpy(),
                                       regression_labels.detach().cpu().numpy())
+
+                break
 
                 # Create visualization if needed
                 if self.train_config['eval_visualization']:
