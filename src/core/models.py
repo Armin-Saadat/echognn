@@ -937,12 +937,10 @@ class GNNEFRegressor(nn.Module):
 
         # Reshape to account for num of clips
         if phase == 'train':
-            print('I am in the train part')
             regression_x = regression_x.view(regression_x.shape[0]//(self.num_vids_per_sample * self.num_clips_per_vid),
                                              -1)
             regression_x = regression_x.mean(1)
         else:
-            print('I am in the else part')
             regression_x = regression_x.mean().unsqueeze(0)
 
         # Classification MLP
