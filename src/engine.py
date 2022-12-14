@@ -132,7 +132,6 @@ class Engine(object):
         self.model_config['attention_encoder'].update({'num_frames': self.data_config['num_frames']})
         self.model_config['attention_encoder'].update({'device': self.device})
         self.model_config['attention_encoder'].update({'input_dim': self.model_config['video_encoder']['output_dim']})
-        self.model_config['attention_encoder2'].update({'input_dim': self.model_config['graph_regressor']['gnn_hidden_dims'][-1]})
 
         # train and test exclusive configurations
         if phase == 'pretrain':
