@@ -1,6 +1,6 @@
 # Training and optimization configs
 train:
-  num_epochs: 100
+  num_epochs: 500
   batch_size: 60
   num_workers: 0
   # Prints number of parameters in the model
@@ -10,7 +10,7 @@ train:
   # Indicates whether visualizations are made during test time
   eval_visualization: False
   # Indicates whether Wandb is used to keep track of runs
-  use_wandb: True
+  use_wandb: False
   wand_project_name: echognn
   wandb_mode: online
 
