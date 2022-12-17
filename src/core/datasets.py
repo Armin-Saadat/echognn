@@ -78,7 +78,7 @@ class EchoNetEfDataset(Dataset, ABC):
             classification_classes = np.array([0, 30, 40, 55, 100])
 
         # CSV file containing file names and labels
-        filelist_df = pd.read_csv(os.path.join(dataset_path, 'FileList.csv'))[:3000]
+        filelist_df = pd.read_csv(os.path.join(dataset_path, 'FileList.csv'))
 
         # Extract Split information
         splits = np.array(filelist_df['Split'].tolist())
