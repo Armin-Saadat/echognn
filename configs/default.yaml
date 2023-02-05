@@ -1,7 +1,12 @@
 # Training and optimization configs
 train:
+<<<<<<< HEAD
   num_epochs: 10000
   batch_size: 3
+=======
+  num_epochs: 500
+  batch_size: 35
+>>>>>>> 747c284b7692f369977e14a662639d6c69c8c0c6
   num_workers: 0
   # Prints number of parameters in the model
   print_model_stats: True
@@ -10,7 +15,7 @@ train:
   # Indicates whether visualizations are made during test time
   eval_visualization: False
   # Indicates whether Wandb is used to keep track of runs
-  use_wandb: False
+  use_wandb: True
   wand_project_name: echognn
   wandb_mode: online
 
@@ -66,7 +71,11 @@ eval:
 # Model-specific configs
 model:
   # Path to checkpoint to continue training from or for evaluation (testing)
+<<<<<<< HEAD
   checkpoint_path: 
+=======
+  checkpoint_path:
+>>>>>>> 747c284b7692f369977e14a662639d6c69c8c0c6
   # Path to pretrained model
   pretrained_path:
 
@@ -114,7 +123,7 @@ dataset:
   # Approximate number of frames per cardiac cycle
   num_frames_per_cycle: 64
   # Number of frames per clip
-  num_frames: 64
+  num_frames: 16
   # EF categories for the classification head
   classification_classes: [0, 30, 40, 55, 100]
   # Indicates whether LV zoom-in augmentation is used during training

@@ -9,10 +9,12 @@ import pandas as pd
 import networkx as nx
 from torch_geometric.utils import from_networkx
 from torchvision.transforms import ToTensor, Compose, Normalize
+from torchvision.transforms.functional import hflip
 from torch.nn import Upsample
 import cv2
 from random import randint
 from math import isnan
+from matplotlib import pyplot as plt
 
 
 class EchoNetEfDataset(Dataset, ABC):
@@ -77,7 +79,7 @@ class EchoNetEfDataset(Dataset, ABC):
             classification_classes = np.array([0, 30, 40, 55, 100])
 
         # CSV file containing file names and labels
-        filelist_df = pd.read_csv(os.path.join(dataset_path, 'FileList.csv'))
+        filelist_df = pd.read_csv(os.path.join(dataset_path, 'FileList.csv'))[:3000]
 
         # Extract Split information
         splits = np.array(filelist_df['Split'].tolist())
@@ -151,6 +153,7 @@ class EchoNetEfDataset(Dataset, ABC):
         # Get the video
         cine_vid = self._loadvideo(self.patient_data_dirs[idx])
 
+
         # Transform video
         cine_vid = self.trans(cine_vid)
 
@@ -173,17 +176,25 @@ class EchoNetEfDataset(Dataset, ABC):
                                                         self.num_frames - cine_vid.shape[2], 112, 112)),
                                  dim=2)
 
+        # cine_vid2 = hflip(cine_vid)
+        # i = randint(2, cine_vid2.shape[2] - 2)
+        # temp1 = cine_vid2[:, :, :i, :, :]
+        # temp2 = cine_vid2[:, :, i:, :, :]
+        # cine_vid2 = torch.cat((temp2, temp1), dim=2)
+
+        cine_vid2 = cine_vid[:, :, :, :cine_vid.shape[3] // 2, :]
+        cine_vid = cine_vid[:, :, :, cine_vid.shape[3] // 2:, :]
+
         # Create fully connected graph
-        nx_graph = nx.complete_graph(self.num_frames, create_using=nx.DiGraph())
+        nx_graph = nx.complete_graph(self.num_frames * 2, create_using=nx.DiGraph())
         for i in range(1, cine_vid.shape[0]):
-            nx_graph = nx.compose(nx_graph, nx.complete_graph(range(i*self.num_frames,
-                                                                    (i+1)*self.num_frames),
+            nx_graph = nx.compose(nx_graph, nx.complete_graph(range(i*self.num_frames*2,
+                                                                    (i+1)*self.num_frames*2),
                                                               create_using=nx.DiGraph()))
 
         g = from_networkx(nx_graph)
-
-        # Add images and label to graph
         g.x = cine_vid
+        g.x2 = cine_vid2
         g.regression_y = regression_label
         g.classification_y = classification_label
         g.es_frame = self.es_frames[idx]
@@ -295,6 +306,7 @@ class EchoNetEfDataset(Dataset, ABC):
         """
 
         return self.num_samples
+
 
     @staticmethod
     def _loadvideo(filename: str):
@@ -417,6 +429,7 @@ class PretrainEchoNetEfDataset(Dataset, ABC):
         # Normalization operation
         self.trans = Compose([ToTensor(),
                               Normalize((mean), (std))])
+
 
         # Interpolation needed if augmentation is required
         self.upsample = None
