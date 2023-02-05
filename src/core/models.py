@@ -473,6 +473,7 @@ class MLPEdgeEncoder(nn.Module):
         self.mlp2 = NRIMLP(hidden_dim * 2, hidden_dim, hidden_dim, fc_dropout_p)
         self.mlp3 = NRIMLP(hidden_dim, hidden_dim, hidden_dim, fc_dropout_p)
         self.mlp4 = NRIMLP(hidden_dim * 3, hidden_dim, hidden_dim, fc_dropout_p)
+        self.mlp5 = NRIMLP(hidden_dim, hidden_dim, hidden_dim, fc_dropout_p)
         self.fc_out = nn.Linear(hidden_dim, 1)
         self.activation_func = nn.Sigmoid()
         self.num_vids_per_sample = num_vids_per_sample
@@ -567,6 +568,34 @@ class MLPEdgeEncoder(nn.Module):
         x = self._node2edge(x, self.rel_rec, self.rel_send)
         x = torch.cat((x, x_skip), dim=2)  # Skip connection
         x = self.mlp4(x)
+
+        x_fin = torch.zeros(x.size(0), self.num_frames, self.num_frames - 1, self.hidden_dim).to(self.device)
+
+        x_prime = x.view(x.size(0), self.num_frames, self.num_frames - 1, self.hidden_dim)
+        [:,:self.num_frames // 2,: self.num_frames // 2 - 1,:]
+        + x.view(x.size(0), self.num_frames, self.num_frames - 1, self.hidden_dim)
+        [:, self.num_frames // 2:, -(self.num_frames // 2 - 1):,:]
+
+        x1 = x.view(x.size(0), self.num_frames, self.num_frames - 1, self.hidden_dim)[:, :self.num_frames // 2,
+             -self.num_frames // 2:, :]
+        x2 = x.view(x.size(0), self.num_frames, self.num_frames - 1, self.hidden_dim)[:, self.num_frames // 2:,
+             :self.num_frames // 2, :]
+        x_prime1 = torch.zeros_like(x1)
+        x_prime2 = torch.zeros_like(x2)
+        ind = np.diag_indices(x_prime1.shape[1])
+        x_prime1[:, ind[0], ind[1]] = x1[:, ind[0], ind[1]]
+        x_prime2[:, ind[0], ind[1]] = x2[:, ind[0], ind[1]]
+        # indices = torch.eye(self.num_frames // 2, self.num_frames // 2).unsqueeze(0).unsqueeze(-1).repeat(x.size(0), 1, 1, self.hidden_dim)
+        # x_prime1 = x1 * indices
+        # x_prime2 = x2 * indices
+
+        x_fin[:, :self.num_frames // 2, :self.num_frames // 2 - 1, :] = x_prime
+        x_fin[:, self.num_frames // 2:, -(self.num_frames // 2 - 1):, :] = x_prime
+        x_fin[:, :self.num_frames // 2, -self.num_frames // 2:, :] = x_prime1
+        x_fin[:, self.num_frames // 2:, :self.num_frames // 2, :] = x_prime2
+
+        x = x_fin.view(x.size(0), self.num_frames * (self.num_frames - 1), self.hidden_dim)
+        x = self.mlp5(x)
 
         return self.activation_func(self.fc_out(x))
 
