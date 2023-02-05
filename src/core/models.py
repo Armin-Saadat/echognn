@@ -477,7 +477,9 @@ class MLPEdgeEncoder(nn.Module):
         self.fc_out = nn.Linear(hidden_dim, 1)
         self.activation_func = nn.Sigmoid()
         self.num_vids_per_sample = num_vids_per_sample
+        self.hidden_dim = hidden_dim
         self.num_frames = num_frames
+        self.device = device
 
         # Create matrices fetching outgoing and incoming node messages
         off_diag = np.ones([num_frames * num_vids_per_sample,
