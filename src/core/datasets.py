@@ -176,11 +176,14 @@ class EchoNetEfDataset(Dataset, ABC):
                                                         self.num_frames - cine_vid.shape[2], 112, 112)),
                                  dim=2)
 
-        cine_vid2 = hflip(cine_vid)
-        i =  randint(2, cine_vid2.shape[2] - 2)
-        temp1 = cine_vid2[:, :, :i, :, :]
-        temp2 = cine_vid2[:, :, i:, :, :]
-        cine_vid2 = torch.cat((temp2, temp1), dim=2)
+        # cine_vid2 = hflip(cine_vid)
+        # i = randint(2, cine_vid2.shape[2] - 2)
+        # temp1 = cine_vid2[:, :, :i, :, :]
+        # temp2 = cine_vid2[:, :, i:, :, :]
+        # cine_vid2 = torch.cat((temp2, temp1), dim=2)
+        
+        cine_vid2 = cine_vid[:, :, :, :cine_vid.shape[3] // 2, :]
+        cine_vid = cine_vid[:, :, :, cine_vid.shape[3] // 2:, :]
 
         # Create fully connected graph
         nx_graph = nx.complete_graph(self.num_frames * 2, create_using=nx.DiGraph())
