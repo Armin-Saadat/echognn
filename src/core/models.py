@@ -579,19 +579,20 @@ class MLPEdgeEncoder(nn.Module):
              -self.num_frames // 2:, :]
         x2 = x.view(x.size(0), self.num_frames, self.num_frames - 1, self.hidden_dim)[:, self.num_frames // 2:,
              :self.num_frames // 2, :]
-        x_prime1 = torch.zeros_like(x1)
-        x_prime2 = torch.zeros_like(x2)
-        ind = np.diag_indices(x_prime1.shape[1])
-        x_prime1[:, ind[0], ind[1]] = x1[:, ind[0], ind[1]]
-        x_prime2[:, ind[0], ind[1]] = x2[:, ind[0], ind[1]]
+        # x_prime1 = torch.zeros_like(x1)
+        # x_prime2 = torch.zeros_like(x2)
+        # ind = np.diag_indices(x_prime1.shape[1])
+        # x_prime1[:, ind[0], ind[1]] = x1[:, ind[0], ind[1]]
+        # x_prime2[:, ind[0], ind[1]] = x2[:, ind[0], ind[1]]
+
         # indices = torch.eye(self.num_frames // 2, self.num_frames // 2).unsqueeze(0).unsqueeze(-1).repeat(x.size(0), 1, 1, self.hidden_dim)
         # x_prime1 = x1 * indices
         # x_prime2 = x2 * indices
 
         x_fin[:, :self.num_frames // 2, :self.num_frames // 2 - 1, :] = x_prime
         x_fin[:, self.num_frames // 2:, -(self.num_frames // 2 - 1):, :] = x_prime
-        x_fin[:, :self.num_frames // 2, -self.num_frames // 2:, :] = x_prime1
-        x_fin[:, self.num_frames // 2:, :self.num_frames // 2, :] = x_prime2
+        x_fin[:, :self.num_frames // 2, -self.num_frames // 2:, :] = x1
+        x_fin[:, self.num_frames // 2:, :self.num_frames // 2, :] = x2
 
         x = x_fin.view(x.size(0), self.num_frames * (self.num_frames - 1), self.hidden_dim)
         x = self.mlp5(x)
